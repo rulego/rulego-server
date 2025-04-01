@@ -4,6 +4,8 @@
 
 [官网](https://rulego.cc) | [文档](https://rulego.cc/pages/rulego-server/) | [贡献指南](CONTRIBUTION_CN.md)
 
+<img src="docs/imgs/logo.png" alt="logo" width="100"/>   
+
 `RuleGo-Server` 是一个基于[RuleGo](https://github.com/rulego/rulego) 构建的轻量化、高性能、模块化、便于集成的自动化工作流平台。
 可用于自动化编排、iPaaS（集成平台即服务）、API编排、应用编排、AI编排、数据处理、IoT规则引擎、AI助手等场景。
 
@@ -108,7 +110,7 @@ nohup ./server -c="./config.conf" >> console.log &
 ```
 
 ## UI
-[UI](ui/README.md)]
+[UI](ui/README.md)
 
 把编译后的`ui`目录改名成`editor`放到根目录下，然后运行`server`即可。也可以通过配置文件修改`ui`目录例如：
 ```ini

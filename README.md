@@ -4,6 +4,8 @@ English | [Chinese](README_ZH.md)
 
 [Official Website](https://rulego.cc) | [Docs](https://rulego.cc/en/pages/rulego-server/) | [Contribution Guide](CONTRIBUTION.md)
 
+<img src="docs/imgs/logo.png" alt="logo" width="100"/> 
+
 `RuleGo-Server` is a lightweight, high-performance, modular, and integration-friendly automation workflow platform built on [RuleGo](https://github.com/rulego/rulego).
 
 It can be used for automation orchestration, iPaaS (Integration Platform as a Service), API orchestration, application orchestration, AI orchestration, data processing, IoT rule engine, AI assistant, and other scenarios.
