@@ -1,0 +1,45 @@
+# 开源许可
+
+RuleGo-Server 采用修改版的 Apache License 2.0 许可证，附加以下条件：
+
+1. 商业用途：RuleGo-Server 可以用于商业目的，包括作为其他应用程序的后端服务或作为企业应用开发平台。如果满足以下条件，则需从版权所有者处获得商业许可：
+   a. 多租户服务：除非获得 RuleGo-Server 的明确书面授权，否则不得使用 RuleGo-Server 源代码运营多租户环境。
+      - 租户定义：在 RuleGo-Server 的上下文中，一个租户对应一个工作区。工作区为每个租户的数据和配置提供独立的隔离区域。
+   b. LOGO和版权信息：在使用 RuleGo-Server 前端的过程中，不得删除或修改 RuleGo-Server 控制台或应用程序中的 LOGO 或版权信息。此限制不适用于不涉及 RuleGo-Server 前端的使用。
+      - 前端定义：在本许可证中，RuleGo-Server 的“前端”包括从原始源代码运行 RuleGo-Server 时位于 `ui/` 目录中的所有组件，或通过 Docker 运行 RuleGo-Server 时的"ui/"镜像。
+
+2. 作为贡献者，您应同意以下内容：
+   a. 所有者可以根据需要调整开源协议，使其更加严格或宽松。
+   b. 您贡献的代码可以用于商业目的，包括但不限于其云业务运营。
+
+3. 其他条款：
+   a. 本协议条款的解释权归 RuleGo-Server 开发者所有。
+
+如有任何问题或需申请商业授权，请联系 RuleGo-Server 开发团队。
+
+除上述特定条件外，其他所有权利和限制均遵循 Apache License 2.0。关于 Apache License 2.0 的详细信息，请访问 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)。
+
+---
+
+# Open Source License
+
+RuleGo-Server is licensed under a modified version of the Apache License 2.0, with the following additional conditions:
+
+1. RuleGo-Server may be utilized commercially, including as a backend service for other applications or as an application development platform for enterprises. Should the conditions below be met, a commercial license must be obtained from the producer:
+
+    a. Multi-tenant service: Unless explicitly authorized by RuleGo-Server in writing, you may not use the RuleGo-Server source code to operate a multi-tenant environment.
+        - Tenant Definition: Within the context of RuleGo-Server, one tenant corresponds to one workspace. The workspace provides a separated area for each tenant's data and configurations.
+
+    b. LOGO and copyright information: In the process of using RuleGo-Server's frontend, you may not remove or moRuleGo-Server the LOGO or copyright information in the RuleGo-Server console or applications. This restriction is inapplicable to uses of RuleGo-Server that do not involve its frontend.
+    - Frontend Definition: For the purposes of this license, the "frontend" of RuleGo-Server includes all components located in the `web/` directory when running RuleGo-Server from the raw source code, or the "web" image when running RuleGo-Server with Docker.
+
+2. As a contributor, you should agree that:
+
+    a. The producer can adjust the open-source agreement to be more strict or relaxed as deemed necessary.
+    b. Your contributed code may be used for commercial purposes, including but not limited to its cloud business operations.
+
+3. Other Terms:
+   a. The interpretation of the terms of this agreement shall be the prerogative of the RuleGo-Server development team.
+
+If you have any questions or need to apply for a commercial license, please contact the RuleGo-Server development team.
+Apart from the specific conditions mentioned above, all other rights and restrictions follow the Apache License 2.0. Detailed information about the Apache License 2.0 can be found at http://www.apache.org/licenses/LICENSE-2.0.

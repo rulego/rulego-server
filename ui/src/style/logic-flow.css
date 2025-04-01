@@ -1,0 +1,6 @@
+.lf-custom-anchor-point {
+  transition: all 0.3s ease-in-out;
+}
+.lf-custom-anchor-point:hover {
+  transform: scale(1.25);
+}

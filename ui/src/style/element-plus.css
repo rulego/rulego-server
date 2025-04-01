@@ -1,0 +1,8 @@
+.el-form-item .el-form-item {
+  margin-bottom: 18px;
+}
+
+/* 自定义样式 */
+.run-drawer .el-drawer__header {
+  margin: 0;
+}

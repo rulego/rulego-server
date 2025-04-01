@@ -1,0 +1,63 @@
+{
+  "name": "relego-ipaas-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/state": "^6.5.1",
+    "@codemirror/view": "^6.36.2",
+    "@element-plus/icons-vue": "^2.3.1",
+    "@logicflow/core": "^2.0.10",
+    "@logicflow/extension": "^2.0.14",
+    "@logicflow/vue-node-registry": "^1.0.12",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@tinymce/tinymce-vue": "^6.1.0",
+    "@tiptap/extension-bullet-list": "^2.11.2",
+    "@tiptap/extension-link": "^2.11.2",
+    "@tiptap/extension-list-item": "^2.11.2",
+    "@tiptap/extension-text-style": "^2.11.2",
+    "@tiptap/starter-kit": "^2.11.2",
+    "@tiptap/vue-3": "^2.11.2",
+    "@vueup/vue-quill": "^1.2.0",
+    "@vueuse/core": "^11.2.0",
+    "@wangeditor/editor-for-vue": "^5.1.12",
+    "axios": "^1.7.9",
+    "codemirror": "^6.0.1",
+    "dayjs": "^1.11.13",
+    "element-plus": "^2.8.6",
+    "fuse.js": "^7.0.0",
+    "humanize-duration": "^3.32.1",
+    "js-beautify": "^1.15.1",
+    "lodash-es": "^4.17.21",
+    "nanoid": "^5.0.9",
+    "pinia": "^2.2.4",
+    "qs": "^6.13.1",
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5",
+    "vue-codemirror": "^6.1.1",
+    "file-saver": "^2.0.5",
+    "screenfull": "^6.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "autoprefixer": "^10.4.20",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "postcss": "^8.4.47",
+    "prettier": "3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.9"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}
