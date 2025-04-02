@@ -10,8 +10,8 @@ const router = useRouter();
 
 const formRef = ref();
 const form = ref({
-  username: '',
-  password: '',
+  username: 'admin',
+  password: 'admin',
 });
 const rules = ref({
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
@@ -55,7 +55,7 @@ async function handleSubmit() {
       <div class="relative w-full rounded-2xl bg-white p-8 shadow-2xl">
         <div class="flex flex-col items-center pb-8">
           <div class="text-3xl font-bold tracking-wider text-gray-800">
-            Rulego Ipaas
+            RuleGo-Server
           </div>
         </div>
         <div>
@@ -101,6 +101,10 @@ async function handleSubmit() {
       </div>
     </div>
   </div>
+  <footer class="fixed bottom-0 left-0 right-0 py-2 bg-white/50 backdrop-blur-sm text-center text-xs text-gray-400">
+    Copyright © 2025 <a href="https://github.com/rulego/rulego-server" target="_blank" style="color: #666; text-decoration: none;">RuleGo-Server</a>. All rights reserved. 
+    <a href="https://rulego.cc" target="_blank" class="text-blue-500 hover:underline">Powered by RuleGo</a>
+  </footer>
 </template>
 
 <style scoped>
