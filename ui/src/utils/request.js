@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { SESSIONSTORAGE_KEYS, getSession } from '@src/utils/sessionstorage';
+import { ElMessage } from 'element-plus';
 
 export const baseURL = window.config.baseURL + '/api/v1';
 
@@ -31,6 +32,12 @@ request.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    if (error.response) {
+      const { status, data } = error.response;
+      ElMessage.error(`Error ${status}: ${data.message || JSON.stringify(data)}`);
+    } else {
+      ElMessage.error(`Error: ${error.message}`);
+    }
     return Promise.reject(error);
   },
 );
