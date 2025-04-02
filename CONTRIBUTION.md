@@ -25,8 +25,23 @@ We are committed to providing an open and inclusive community environment. Pleas
 5. **Create Branch**: `git checkout -b my-feature-branch main`.
 6. **Write Code and Tests**: Add your code and corresponding test cases.
 7. **Format Code**: Use the `gofmt -s -w .` command to format the code.
-8. **Commit and Push**: Use `git add .` and `git commit -s -m "fix: add new feature"` to commit changes, then push to your forked repository.
-9. **Create PR**: Create a PR on Github and ensure you provide a detailed PR description.
+8. **Commit the code**: Use `git add .` and `git commit -s -m "fix: add new feature"` to commit the changes.
+    - `feat`: Abbreviation for feature, a new functionality or enhancement.
+    - `fix`: Bug fix.
+    - `docs`: Documentation changes.
+    - `style`: Formatting changes. For example, adjusting indentation, spaces, removing extra blank lines, or adding missing semicolons. In short, changes that do not affect the meaning or functionality of the code.
+    - `refactor`: Code refactoring. Modifications that are neither bug fixes nor new feature additions.
+    - `perf`: Abbreviation for performance, improvements to code performance.
+    - `test`: Changes to test files.
+    - `chore`: Other minor changes. Typically one or two lines of changes, or a series of small changes that belong to this category.
+
+   For more detailed information, please refer to [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0/).
+
+9. **Push the code**: Before committing the code, please first perform a rebase operation to ensure that your branch is synchronized with the main branch of the upstream repository. 
+   - `git fetch --all`
+   - `git rebase upstream/main`   
+   - Push your branch to GitHub: `git push origin my-fix-branch`
+10. **Create PR**: Create a PR on Github and ensure you provide a detailed PR description.
 
 ### 4.2 Compiling Source Code
 

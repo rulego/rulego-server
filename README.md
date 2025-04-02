@@ -1,6 +1,6 @@
 # server
 
-English | [Chinese](README_ZH.md)
+English | [简体中文](README_ZH.md)
 
 [Official Website](https://rulego.cc) | [Docs](https://rulego.cc/en/pages/rulego-server/) | [Contribution Guide](CONTRIBUTION.md)
 

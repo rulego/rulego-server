@@ -1,6 +1,6 @@
 # RuleGo-Server
 
-[English](README.md)| 中文
+[English](README.md)| 简体中文
 
 [官网](https://rulego.cc) | [文档](https://rulego.cc/pages/rulego-server/) | [贡献指南](CONTRIBUTION_CN.md)
 
@@ -27,7 +27,6 @@
 [rulego-marketplace](https://github.com/rulego/rulego-marketplace)
 
 ## HTTP API
-
 [API 文档](https://apifox.com/apidoc/shared-d17a63fe-2201-4e37-89fb-f2e8c1cbaf40/234016936e0)
 
 ## 多租户
