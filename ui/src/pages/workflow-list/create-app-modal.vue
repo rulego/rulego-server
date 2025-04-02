@@ -37,8 +37,9 @@ async function createHandler() {
     };
     await Api.setRulesBase(params.id, params);
     emit('success', params.id);
-  } finally {
     close();
+  } catch (error) {
+    console.error(error);
   }
 }
 
