@@ -15,6 +15,7 @@ import {
 } from '@src/pages/workflow/app-design/utils';
 import AppManage from '@src/pages/workflow/app-manage/app-manage.vue';
 import AppDesign from '@src/pages/workflow/app-design/app-design.vue';
+import AppSourceCode from '@src/pages/workflow/app-source-code/app-source-code.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -28,6 +29,14 @@ const menuList = ref([
   {
     key: WORKFLOW_MENU_KEY.APP_DESIGN,
     label: '应用设计',
+  },
+  {
+    key: WORKFLOW_MENU_KEY.APP_SOURCE_CODE,
+    label: '源码模式',
+  },
+  {
+    key: WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN,
+    label: '分屏模式',
   },
 ]);
 const menuActiveKey = ref(WORKFLOW_MENU_KEY.APP_MANAGE);
@@ -298,32 +307,17 @@ onMounted(() => {
 
 <template>
   <div class="flex h-screen w-screen flex-col overflow-auto">
-    <div
-      class="flex flex-none items-center border-b border-[var(--el-border-color)]"
-    >
+    <div class="flex flex-none items-center border-b border-[var(--el-border-color)]">
       <div class="flex-none pl-2">
-        <el-button
-          icon="el-icon-arrow-left-bold"
-          :text="true"
-          @click="exitHandler"
-        >
+        <el-button icon="el-icon-arrow-left-bold" :text="true" @click="exitHandler">
           退出
         </el-button>
       </div>
       <el-divider direction="vertical" />
       <div class="flex-none">
-        <el-menu
-          class="workflow-menu"
-          :default-active="menuActiveKey"
-          mode="horizontal"
-          :ellipsis="false"
-          @select="menuSelectHandler"
-        >
-          <el-menu-item
-            v-for="item in menuList"
-            :key="item.key"
-            :index="item.key"
-          >
+        <el-menu class="workflow-menu" :default-active="menuActiveKey" mode="horizontal" :ellipsis="false"
+          @select="menuSelectHandler">
+          <el-menu-item v-for="item in menuList" :key="item.key" :index="item.key">
             {{ item.label }}
           </el-menu-item>
         </el-menu>
@@ -333,32 +327,30 @@ onMounted(() => {
       </div>
       <div class="w-[204px] flex-none px-4">
         <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN">
-          <el-button icon="el-icon-video-play" @click="openDrawerHandler"
-            >测试</el-button
-          >
-          <el-button
-            icon="el-icon-setting"
-            type="primary"
-            @click="saveFlowHandler"
-            >保存</el-button
-          >
+          <el-button icon="el-icon-video-play" @click="openDrawerHandler">测试</el-button>
+          <el-button icon="el-icon-setting" type="primary" @click="saveFlowHandler">保存</el-button>
         </template>
       </div>
     </div>
     <div class="flex-grow overflow-auto">
       <!-- 应用管理 -->
-      <app-manage
-        v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_MANAGE"
-        :base-info-form-state="formState.baseInfoFormState"
-        :variable-state="formState.variableState"
-        @save="saveHandler"
-      ></app-manage>
+      <app-manage v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_MANAGE"
+        :base-info-form-state="formState.baseInfoFormState" :variable-state="formState.variableState"
+        @save="saveHandler"></app-manage>
       <!-- 应用设计 -->
-      <app-design
-        ref="appDesignRef"
-        v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN"
-        :flow-data="flowData"
-      ></app-design>
+      <app-design ref="appDesignRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN"
+        :flow-data="flowData"></app-design>
+      <!--源码模式-->
+      <app-source-code v-model="flowData" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE"/>
+      <!-- 分屏模式 -->
+      <div class="flex flex-row h-full" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN">
+        <div class="flex-none w-1/2">
+          <app-design :flow-data="flowData" ref="appDesignRef"/>
+        </div>
+        <div class="flex-none w-1/2">
+          <app-source-code v-model="flowData" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
