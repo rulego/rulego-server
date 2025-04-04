@@ -12,15 +12,18 @@ import {
 import {
   generateSwitchNodeFormCasesValue,
   isEndpointNode,
+  mapFlowDataModelToRuleGoModel,
 } from '@src/pages/workflow/app-design/utils';
 import AppManage from '@src/pages/workflow/app-manage/app-manage.vue';
 import AppDesign from '@src/pages/workflow/app-design/app-design.vue';
 import AppSourceCode from '@src/pages/workflow/app-source-code/app-source-code.vue';
+import AppSplitScreen from '@src/pages/workflow/app-split-screen/app-split-screen.vue';
 
 const router = useRouter();
 const route = useRoute();
 
 const appDesignRef = ref();
+const appSplitScreenRef = ref();
 const menuList = ref([
   {
     key: WORKFLOW_MENU_KEY.APP_MANAGE,
@@ -167,129 +170,36 @@ function generateRouters(data, endpointsNode) {
   return routers;
 }
 
+function handelDesignToJson(){
+  appSplitScreenRef.value.handelDesignToJson();
+}
+
+function handelJsonToDesign(){
+  appSplitScreenRef.value.handelJsonToDesign();
+}
+
+
+
 async function saveFlowHandler() {
-  if (!appDesignRef.value) return;
-  const data = appDesignRef.value.getData();
+  let ruleGoModel;
 
-  const params = cloneDeep(bakValue.value);
-  const id = params.ruleChain.id;
-
-  const endpointsNodeIndex = data.nodes.findIndex((item) => {
-    return isEndpointNode(item.type, item.properties?.rawNodeType);
-  });
-  console.info(endpointsNodeIndex);
-  const endpointsNode = data.nodes[endpointsNodeIndex];
-  if (endpointsNodeIndex !== -1) {
-    params.metadata.endpoints = [endpointsNode] || [];
-    params.metadata.endpoints = params.metadata.endpoints.map((item) => {
-      let type = findKey(NODE_TYPE_MAP, (o) => o === item.type);
-      if (!type) {
-        type = item.properties?.rawNodeType;
-      }
-      const formData = item.properties.formData;
-      const routers = generateRouters(data, item);
-      let nodeData = {
-        id: item.id,
-        type,
-        name: formData.title || formData.additionalInfo?.title,
-        debugMode: false,
-        routers,
-        configuration: cloneDeep(formData),
-        additionalInfo: {
-          description:
-            formData.description || formData.additionalInfo?.description,
-          layoutX: item.x,
-          layoutY: item.y,
-          width: item.properties.width,
-          height: item.properties.height,
-          icon: '',
-          background: '',
-        },
-      };
-      delete nodeData.configuration.additionalInfo;
-      delete nodeData.configuration.routers;
-      return nodeData;
-    });
-    data.nodes.splice(endpointsNodeIndex, 1);
+  if(menuActiveKey.value === WORKFLOW_MENU_KEY.APP_DESIGN){
+    const flow = appDesignRef.value.getData();
+    ruleGoModel = mapFlowDataModelToRuleGoModel(flow,bakValue.value);
+  }
+  else if(menuActiveKey.value === WORKFLOW_MENU_KEY.APP_SOURCE_CODE){
+    ruleGoModel = flowData.value;
+  }
+  else if(menuActiveKey.value === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN){
+    ruleGoModel = flowData.value;
   }
 
-  let startNode = cloneDeep(endpointsNode);
-
-  if (!endpointsNode) {
-    startNode = data.nodes.find((item) => item.type === 'start');
+  if(!ruleGoModel) {
+    ElMessage.error('请先设计应用');
+    return;
   }
-
-  params.ruleChain.additionalInfo.layoutX = startNode.x;
-  params.ruleChain.additionalInfo.layoutY = startNode.y;
-  params.ruleChain.additionalInfo.width = startNode.properties.width;
-  params.ruleChain.additionalInfo.height = startNode.properties.height;
-  params.ruleChain.additionalInfo.title = startNode.properties.formData.title;
-
-  const startEdge = data.edges.find((item) => item.sourceNodeId === 'start');
-  if (startEdge) {
-    const firstNodeIndex = data.nodes.findIndex(
-      (item) => item.id === startEdge.targetNodeId,
-    );
-    const firstNode = cloneDeep(data.nodes[firstNodeIndex]);
-    data.nodes.slice(firstNodeIndex, 1);
-    data.nodes.unshift(firstNode);
-  }
-  const nodes = data.nodes.filter((item) => item.id !== 'start');
-  const edges = data.edges.filter((item) => item.sourceNodeId !== 'start');
-
-  params.metadata.nodes = nodes.map((item) => {
-    const type =
-      findKey(NODE_TYPE_MAP, (o) => o === item.type) ||
-      item?.properties?.rawNodeType;
-    const formData = cloneDeep(item.properties.formData);
-    if (formData.routers) {
-      delete formData.routers;
-    }
-    if (type === 'switch') {
-      formData.cases = generateSwitchNodeFormCasesValue(formData.cases);
-      formData.cases = formData.cases.filter((item) => item.case);
-    }
-    let newNode = {
-      id: item.id,
-      type,
-      name: formData.title || formData.additionalInfo?.title,
-      debugMode: false,
-      configuration: formData,
-      additionalInfo: {
-        description:
-          formData.description || formData.additionalInfo?.description,
-        layoutX: item.x,
-        layoutY: item.y,
-        width: item.properties.width,
-        height: item.properties.height,
-        icon: '',
-        background: '',
-      },
-    };
-
-    if (item.type === 'msg-type-switch') {
-      newNode.additionalInfo.routers =
-        item?.properties?.formData?.routers || [];
-    }
-    delete newNode.configuration.additionalInfo;
-    return newNode;
-  });
-  params.metadata.nodes = uniqBy(params.metadata.nodes, 'id');
-  params.metadata.connections = uniqBy(
-    edges,
-    (item) =>
-      `${item.sourceNodeId}-${item.sourceAnchorId}-${item.targetNodeId}-${item.targetAnchorId}`,
-  ).map((item) => {
-    const text = item?.text?.value || '';
-    return {
-      fromId: item.sourceNodeId,
-      toId: item.targetNodeId,
-      type: item.sourceAnchorId,
-      label: text,
-    };
-  });
-
-  await Api.setRules(id, params);
+  const id = ruleGoModel.ruleChain.id;
+  await Api.setRules(id, ruleGoModel);
   await refreshFormState();
 
   ElMessage.success('保存成功');
@@ -325,10 +235,29 @@ onMounted(() => {
       <div class="flex flex-grow items-center justify-center overflow-auto">
         {{ bakValue?.ruleChain?.name || '应用名称' }}
       </div>
-      <div class="w-[204px] flex-none px-4">
+      <div class="min-w-[204px] flex-none px-4">
         <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN">
           <el-button icon="el-icon-video-play" @click="openDrawerHandler">测试</el-button>
           <el-button icon="el-icon-setting" type="primary" @click="saveFlowHandler">保存</el-button>
+        </template>
+        <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE">
+          <div class="flex flex-row justify-end">
+            <el-button icon="el-icon-upload-filled" type="primary" @click="saveFlowHandler">保存代码</el-button>
+          </div>
+        </template>
+        <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN">
+          <div class="flex flex-row justify-end">
+            <el-button @click="handelDesignToJson" type="primary">图->json</el-button>
+            <el-button @click="handelJsonToDesign" type="primary">图<-json</el-button>
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              content="只会保存json,请把图同步到json中"
+              placement="left"
+            >
+              <el-button icon="el-icon-upload-filled" type="primary" @click="saveFlowHandler">保存代码</el-button>
+            </el-tooltip>
+          </div>
         </template>
       </div>
     </div>
@@ -341,16 +270,9 @@ onMounted(() => {
       <app-design ref="appDesignRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN"
         :flow-data="flowData"></app-design>
       <!--源码模式-->
-      <app-source-code v-model="flowData" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE"/>
+      <app-source-code v-model="flowData" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE" />
       <!-- 分屏模式 -->
-      <div class="flex flex-row h-full" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN">
-        <div class="flex-none w-1/2">
-          <app-design :flow-data="flowData" ref="appDesignRef"/>
-        </div>
-        <div class="flex-none w-1/2">
-          <app-source-code v-model="flowData" />
-        </div>
-      </div>
+      <app-split-screen ref="appSplitScreenRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN" v-model="flowData" />
     </div>
   </div>
 </template>

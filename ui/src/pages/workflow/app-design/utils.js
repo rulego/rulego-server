@@ -10,7 +10,7 @@ const EXTEND_NODE_TYPE_MAP = {
   ...NODE_TYPE_MAP,
   start: 'start',
 };
-
+import { cloneDeep, findKey, uniqBy } from 'lodash-es';
 export async function generateComponentList() {
   try {
     const components = await Api.getComponents();
@@ -342,4 +342,132 @@ export function customNodeGetAnchorShape(anchorData) {
     },
     [type === 'input' ? inputAnchor : outputAnchor],
   );
+}
+
+/**
+ * 将图的数据转换为规则引擎的规则链数据
+ * @description 将图的数据转换为规则引擎的规则链数据
+ * @param {*} flowData 图的数据
+ * @param {*} oldRuleGoModel 规则引擎的规则链数据 
+ * @returns newRuleGoModel 更新后的规则引擎的规则链数据 
+ */
+export function mapFlowDataModelToRuleGoModel(flowData,oldRuleGoModel){
+  const data = flowData;
+  const params = cloneDeep(oldRuleGoModel);
+
+  const endpointsNodeIndex = data.nodes.findIndex((item) => {
+    return isEndpointNode(item.type, item.properties?.rawNodeType);
+  });
+  console.info(endpointsNodeIndex);
+  const endpointsNode = data.nodes[endpointsNodeIndex];
+  if (endpointsNodeIndex !== -1) {
+    params.metadata.endpoints = [endpointsNode] || [];
+    params.metadata.endpoints = params.metadata.endpoints.map((item) => {
+      let type = findKey(NODE_TYPE_MAP, (o) => o === item.type);
+      if (!type) {
+        type = item.properties?.rawNodeType;
+      }
+      const formData = item.properties.formData;
+      const routers = generateRouters(data, item);
+      let nodeData = {
+        id: item.id,
+        type,
+        name: formData.title || formData.additionalInfo?.title,
+        debugMode: false,
+        routers,
+        configuration: cloneDeep(formData),
+        additionalInfo: {
+          description:
+            formData.description || formData.additionalInfo?.description,
+          layoutX: item.x,
+          layoutY: item.y,
+          width: item.properties.width,
+          height: item.properties.height,
+          icon: '',
+          background: '',
+        },
+      };
+      delete nodeData.configuration.additionalInfo;
+      delete nodeData.configuration.routers;
+      return nodeData;
+    });
+    data.nodes.splice(endpointsNodeIndex, 1);
+  }
+
+  let startNode = cloneDeep(endpointsNode);
+
+  if (!endpointsNode) {
+    startNode = data.nodes.find((item) => item.type === 'start');
+  }
+
+  params.ruleChain.additionalInfo.layoutX = startNode.x;
+  params.ruleChain.additionalInfo.layoutY = startNode.y;
+  params.ruleChain.additionalInfo.width = startNode.properties.width;
+  params.ruleChain.additionalInfo.height = startNode.properties.height;
+  params.ruleChain.additionalInfo.title = startNode.properties.formData.title;
+
+  const startEdge = data.edges.find((item) => item.sourceNodeId === 'start');
+  if (startEdge) {
+    const firstNodeIndex = data.nodes.findIndex(
+      (item) => item.id === startEdge.targetNodeId,
+    );
+    const firstNode = cloneDeep(data.nodes[firstNodeIndex]);
+    data.nodes.slice(firstNodeIndex, 1);
+    data.nodes.unshift(firstNode);
+  }
+  const nodes = data.nodes.filter((item) => item.id !== 'start');
+  const edges = data.edges.filter((item) => item.sourceNodeId !== 'start');
+
+  params.metadata.nodes = nodes.map((item) => {
+    const type =
+      findKey(NODE_TYPE_MAP, (o) => o === item.type) ||
+      item?.properties?.rawNodeType;
+    const formData = cloneDeep(item.properties.formData);
+    if (formData.routers) {
+      delete formData.routers;
+    }
+    if (type === 'switch') {
+      formData.cases = generateSwitchNodeFormCasesValue(formData.cases);
+      formData.cases = formData.cases.filter((item) => item.case);
+    }
+    let newNode = {
+      id: item.id,
+      type,
+      name: formData.title || formData.additionalInfo?.title,
+      debugMode: false,
+      configuration: formData,
+      additionalInfo: {
+        description:
+          formData.description || formData.additionalInfo?.description,
+        layoutX: item.x,
+        layoutY: item.y,
+        width: item.properties.width,
+        height: item.properties.height,
+        icon: '',
+        background: '',
+      },
+    };
+
+    if (item.type === 'msg-type-switch') {
+      newNode.additionalInfo.routers =
+        item?.properties?.formData?.routers || [];
+    }
+    delete newNode.configuration.additionalInfo;
+    return newNode;
+  });
+  params.metadata.nodes = uniqBy(params.metadata.nodes, 'id');
+  params.metadata.connections = uniqBy(
+    edges,
+    (item) =>
+      `${item.sourceNodeId}-${item.sourceAnchorId}-${item.targetNodeId}-${item.targetAnchorId}`,
+  ).map((item) => {
+    const text = item?.text?.value || '';
+    return {
+      fromId: item.sourceNodeId,
+      toId: item.targetNodeId,
+      type: item.sourceAnchorId,
+      label: text,
+    };
+  });
+  return params;
 }
