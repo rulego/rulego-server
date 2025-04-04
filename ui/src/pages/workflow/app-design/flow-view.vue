@@ -208,7 +208,7 @@ function updateNodePropertiesNextNodesById(nodeId) {
       .map((node) => {
         return {
           nodeId: node.id,
-          nodeTitle: node.properties?.formData?.title || '未命名',
+          nodeTitle: node.properties?.formData?.title ||node.properties?.formData?.additionalInfo?.title || '未命名',
         };
       });
 
