@@ -125,6 +125,12 @@ function generateStartMenuItem() {
   };
 }
 
+function clearFlowData() {
+  nodes.value = [];
+  edges.value = [];
+  flowViewRef.value?.getLf().clearData();
+}
+
 function generateFlowData() {
   if (!flowViewRef.value) return;
 
@@ -795,6 +801,8 @@ onBeforeUnmount(() => {
 
 defineExpose({
   getData,
+  clearFlowData,
+  generateFlowData,
   openDrawer,
   closeDrawer,
 });
