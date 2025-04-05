@@ -34,6 +34,7 @@ const emit = defineEmits([
   'selected',
   'updateNodeProperties',
   'addComment',
+  'mouseup',
 ]);
 
 const closeNodeFormBus = EventBus.closeNodeForm();
@@ -41,6 +42,7 @@ const showNodeMenuBus = EventBus.showNodeMenu();
 const changeFlowNodeBus = EventBus.changeFlowNode();
 const jumpToNodeBus = EventBus.jumpToNode();
 const deleteFlowNodeByIdBus = EventBus.deleteFlowNodeById();
+const logicflowNodeMouseUp = EventBus.logicflowNodeMouseUp();
 
 let lf = null;
 let miniMapOptions = {
@@ -66,6 +68,16 @@ const { x: mouseX, y: mouseY } = useMouse();
 
 function setSelectedNodeId(id) {
   selectedNodeId.value = id;
+}
+
+/**
+ * Handles an event with the provided data.
+ * 
+ * @param {{data:any,e:Event}} evt - The data associated with the event.
+ */
+function handleMouseup(evt){
+  logicflowNodeMouseUp.emit(evt);
+  emit('mouseup', evt);
 }
 
 function flowNodeClickHandler({ data }) {
@@ -496,6 +508,7 @@ function initFlow() {
   lf.on('node:click', flowNodeClickHandler);
   lf.on('custom:anchor-click', flowAnchorClickHandler);
   lf.on('anchor:drop', flowAnchorDropHandler);
+  lf.on('node:mouseup',handleMouseup);
 
   flowNodes.forEach((node) => {
     register(node, lf);

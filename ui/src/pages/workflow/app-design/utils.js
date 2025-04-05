@@ -1,8 +1,10 @@
-import { h as lfh } from '@logicflow/core';
+import { Component, h as lfh } from '@logicflow/core';
 import * as Api from '@src/api';
 import { nodeUtils } from '@src/utils/flow-utils';
 import {
   ENDPOINTS_NODE_TYPE_KEYS,
+  NODE_DEFAULT_HEIGHT,
+  NODE_DEFAULT_WIDTH,
   NODE_TYPE_MAP,
 } from '@src/pages/workflow/app-design/constant';
 
@@ -10,7 +12,8 @@ const EXTEND_NODE_TYPE_MAP = {
   ...NODE_TYPE_MAP,
   start: 'start',
 };
-import { cloneDeep, findKey, uniqBy } from 'lodash-es';
+import { cloneDeep, isEmpty, findKey, unionBy,uniqBy } from 'lodash-es';
+
 export async function generateComponentList() {
   try {
     const components = await Api.getComponents();
@@ -348,10 +351,10 @@ export function customNodeGetAnchorShape(anchorData) {
  * 将图的数据转换为规则引擎的规则链数据
  * @description 将图的数据转换为规则引擎的规则链数据
  * @param {*} flowData 图的数据
- * @param {*} oldRuleGoModel 规则引擎的规则链数据 
- * @returns newRuleGoModel 更新后的规则引擎的规则链数据 
+ * @param {*} oldRuleGoModel 规则引擎的规则链数据
+ * @returns newRuleGoModel 更新后的规则引擎的规则链数据
  */
-export function mapFlowDataModelToRuleGoModel(flowData,oldRuleGoModel){
+export function mapFlowDataModelToRuleGoModel(flowData, oldRuleGoModel) {
   const data = flowData;
   const params = cloneDeep(oldRuleGoModel);
 
@@ -470,4 +473,425 @@ export function mapFlowDataModelToRuleGoModel(flowData,oldRuleGoModel){
     };
   });
   return params;
+}
+
+/**
+ *
+ * @param {*} ruleGoModel 规则引擎的规则链数据
+ * @param {*} menuList 菜单列表
+ * @description 将规则引擎的规则链数据转换为图的数据
+ * @returns { { nodes:[],edges:[] }} data 图的数据
+ */
+export function mapRuleGoModelToFlowDataModel(ruleGoModel, menuList) {
+  let tNodes = [];
+  let tEdges = [];
+  const userData = cloneDeep(ruleGoModel);
+
+  // 转换逻辑
+
+  let ruleChainAdditionalInfo = {};
+  //规则链Id名称等数据
+  if (userData.ruleChain) {
+    ruleChainAdditionalInfo = userData.ruleChain.additionalInfo || {};
+  }
+  //默认数据
+  let initData = {
+    //开始节点ID
+    startNodeId: 'start',
+    startNodeText: '开始',
+    startNodeType: 'start',
+    nodeCount: 0,
+    edgeCount: 0,
+    nodeWidth: 200,
+  };
+  //开始节点
+  const options = {
+    startX: 280,
+    startY: 280,
+  };
+  let referenceX =
+    parseInt(ruleChainAdditionalInfo.layoutX || options.startX) ||
+    options.startX;
+  let referenceY =
+    parseInt(ruleChainAdditionalInfo.layoutY || options.startY) ||
+    options.startY;
+  let hasEndpoint = userData?.metadata?.endpoints?.length > 0;
+  //如果没有endpoint节点，添加start固定节点
+  if (!hasEndpoint) {
+    tNodes.push({
+      id: initData.startNodeId,
+      type: initData.startNodeType,
+      x: referenceX,
+      y: referenceY,
+      text: initData.startNodeText,
+    });
+  }
+
+  //第一个普通节点(非endpoint节点)
+  let firstNode = null;
+  //最大节点Id序号
+  let maxNodeIdSeq = 0;
+  let firstNodeIndex =
+    (userData.metadata && userData.metadata.firstNodeIndex) || 0;
+  //转换节点
+  if (userData && userData.metadata && userData.metadata.nodes) {
+    userData.metadata.nodes.forEach((item, index) => {
+      initData.nodeCount++;
+      //获取节点类型
+      let nodeType = item.type;
+
+      if (firstNodeIndex === index) {
+        firstNode = item;
+      }
+      referenceX = referenceX + 150;
+      let additionalInfo = item.additionalInfo || {};
+      let x = additionalInfo.layoutX || referenceX;
+      let y = additionalInfo.layoutY || referenceY;
+
+      tNodes.push({
+        id: item.id,
+        type: nodeType,
+        x: x,
+        y: y,
+        text: item.name,
+        properties: {
+          // view: nodeComponents[item.type],
+          model: item,
+        },
+      });
+    });
+  }
+  //转换输入端节点
+  if (hasEndpoint) {
+    userData.metadata.endpoints.forEach((item, index) => {
+      referenceX = referenceX + 150;
+      let additionalInfo = item.additionalInfo || {};
+      let x = additionalInfo.layoutX || referenceX;
+      let y = additionalInfo.layoutY || referenceY;
+      tNodes.push({
+        id: item.id,
+        type: item.type,
+        x: x,
+        y: y,
+        text: item.name,
+        properties: {
+          // view: nodeComponents[item.type],
+          model: item,
+        },
+      });
+    });
+  }
+  //输入端节点连接列表
+  let endpointConnections = [];
+  //如果没有endpoint节点，添加start节点和第一个节点连线
+  if (!hasEndpoint && firstNode) {
+    endpointConnections = [
+      { fromId: initData.startNodeId, toId: firstNode.id },
+    ];
+  }
+
+  //处理输入端节点连线
+  if (userData.metadata && userData.metadata.endpoints) {
+    userData.metadata.endpoints.forEach((item, index) => {
+      endpointConnections = endpointConnections.concat(
+        getEndpointConnections(item.id, item, firstNode),
+      );
+    });
+  }
+
+  let connections = endpointConnections;
+  //转换其他节点边连线
+  if (userData && userData.metadata && userData.metadata.connections) {
+    connections = connections.concat(userData.metadata.connections);
+  }
+  //渲染边
+  connections.forEach((item) => {
+    initData.edgeCount++;
+    let edge = createEdge(initData, tNodes, item);
+    tEdges.push(edge);
+  });
+
+  tNodes = tNodes.map((item) => {
+    return generateFlowNode(item, connections, menuList);
+  });
+
+  tEdges = tEdges.map((item) => {
+    return generateFlowEdge(item);
+  });
+  return {
+    nodes: tNodes,
+    edges: tEdges,
+  };
+}
+
+/**
+ * 创建边
+ * @param {*} initData
+ * @param {*} nodes
+ * @param {*} item
+ * @returns
+ */
+export function createEdge(initData, nodes, item) {
+  let edge = {
+    id: 'edge_' + initData.edgeCount,
+    type: 'custom-bezier',
+    sourceNodeId: item.fromId,
+    targetNodeId: item.toId,
+    startPoint: {},
+    endPoint: {},
+    text: item.label || '',
+    properties: {
+      model: { ...item },
+    },
+  };
+  let sourceNode = getNodeByID(nodes, edge.sourceNodeId);
+  let targetNode = getNodeByID(nodes, edge.targetNodeId);
+  if (sourceNode) {
+    edge.startPoint.x = sourceNode.x + initData.nodeWidth / 2;
+    edge.startPoint.y = sourceNode.y;
+  }
+  if (targetNode) {
+    edge.endPoint.x = targetNode.x - initData.nodeWidth / 2 - 10;
+    edge.endPoint.y = targetNode.y;
+  }
+  return edge;
+}
+
+//通过id查找节点
+export function getNodeByID(nodes, id) {
+  let node = {};
+  if (nodes) {
+    nodes.forEach((item) => {
+      if (item.id === id) {
+        node = item;
+      }
+    });
+  }
+  return node;
+}
+
+export function generateStaticAnchors(config) {
+  let anchors = [];
+  if (!config) return anchors;
+  const relationTypes = config.relationTypes || [];
+  relationTypes.forEach((relationType) => {
+    return anchors.push({
+      type: 'output',
+      id: relationType.value,
+      name: relationType.label,
+      top: 0,
+      isStatic: true,
+    });
+  });
+
+  return anchors;
+}
+
+//获取endpoint连线
+export function getEndpointConnections(fromId, endpointModel, firstNode) {
+  let connections = [];
+  if (!firstNode) {
+    return [];
+  }
+  if (endpointModel.routers && endpointModel.routers.length > 0) {
+    endpointModel.routers.forEach((item) => {
+      if (item.to && item.to.path) {
+        //格式:chainId:nodeId1:nodeId2:nodeId3
+        let values = item.to.path.split(':');
+        let path = toFromPath(item).trim();
+        if (values.length <= 1) {
+          connections.push({
+            fromId: fromId,
+            toId: firstNode.id,
+            routerId: item.id,
+            nodeType: 'endpoint-node',
+            type: path,
+          });
+        } else {
+          //从1开始遍历节点ID
+          for (let i = 1; i < values.length; i++) {
+            connections.push({
+              fromId: fromId,
+              toId: values[i].trim(),
+              nodeType: 'endpoint-node',
+              routerId: item.id,
+              type: path,
+            });
+          }
+        }
+      }
+    });
+  }
+  return connections;
+}
+
+export function toFromPath(item) {
+  if (!item.from) {
+    return '';
+  }
+  let params = item.params ? item.params.join(' ') : '';
+  return params + ' ' + (item.from && item.from.path);
+}
+
+/**
+ *
+ * @param {string} type
+ * @param {Object} menuList
+ * @returns {Component}
+ */
+export function findComponentByType(type, menuList) {
+  if (isEmpty(menuList)) {
+    return undefined;
+  }
+  const allComponents = Object.keys(menuList)
+    .map((key) => {
+      return menuList[key]?.components || [];
+    })
+    .flat();
+  const component = allComponents.find((item) => item.type === type);
+  return component;
+}
+
+export function generateFormData(config) {
+  if (!config) return {};
+  let form = {
+    // title: config.label,
+    additionalInfo: {
+      title: config.label,
+      description: '',
+    },
+  };
+  (config.fields || []).forEach((field) => {
+    let value = cloneDeep(field.defaultValue);
+    form[field.name] = value;
+  });
+
+  return form;
+}
+
+export function generateFlowNode(config, connections, menuList) {
+  const configType = config.type;
+  const configAdditionalInfo = config?.properties?.model?.additionalInfo || {};
+  const configConfiguration = config?.properties?.model?.configuration || {};
+  let routers = config?.properties?.model?.routers || [];
+  const configName = config.text;
+  let flowNodeType = convertNodeType(configType);
+  let flowNodeX = config.x || 0;
+  let flowNodeY = config.y || 0;
+  if (configType !== 'start') {
+    flowNodeX = configAdditionalInfo.layoutX
+      ? Number(configAdditionalInfo.layoutX)
+      : 0;
+    flowNodeY = configAdditionalInfo.layoutY
+      ? Number(configAdditionalInfo.layoutY)
+      : 0;
+  }
+
+  if (!flowNodeType) return undefined;
+
+  const defaultNode = findComponentByType(configType, menuList);
+  let defaultNodeForm = generateFormData(defaultNode);
+  // defaultNodeForm = merge(defaultNodeForm, configConfiguration);
+  defaultNodeForm = configConfiguration;
+  // defaultNodeForm.title = configName;
+  defaultNodeForm.additionalInfo = configAdditionalInfo || {};
+  defaultNodeForm.additionalInfo.title =
+    config?.properties?.model?.name || configName;
+
+  let defaultNodeFields = generateFormFields(defaultNode?.fields);
+  defaultNodeFields = generateStaticFormFields(
+    defaultNodeFields,
+    config,
+    defaultNode,
+  );
+  let defaultAnchors = generateStaticAnchors(defaultNode);
+  routers = routers.map((item) => {
+    return {
+      id: item.id,
+      path: item.from.path,
+      fromProcessors: item.from.processors,
+      toProcessors: item.to.processors,
+    };
+  });
+
+  const flowNode = {
+    id: config.id,
+    type: flowNodeType,
+    properties: {
+      formData: { ...defaultNodeForm },
+      fields: defaultNodeFields,
+      nextNodes: [],
+      anchors: defaultAnchors,
+      status: generateDefaultPropertiesStatus(),
+      width: configAdditionalInfo.width || NODE_DEFAULT_WIDTH,
+      height: configAdditionalInfo.height || NODE_DEFAULT_HEIGHT,
+      rawNodeType: configType,
+    },
+    width: configAdditionalInfo.width || NODE_DEFAULT_WIDTH,
+    height: configAdditionalInfo.height || NODE_DEFAULT_HEIGHT,
+    x: flowNodeX,
+    y: flowNodeY,
+  };
+  if (flowNodeType) {
+    flowNode.properties.formData = {
+      ...flowNode.properties.formData,
+      routers,
+    };
+  } else {
+    delete flowNode.properties.formData.routers;
+  }
+
+  if (flowNodeType === 'msg-type-switch') {
+    const msgTypeSwitchConnections = (connections || []).filter((item) => {
+      return item.fromId === flowNode.id;
+    });
+    const msgTypeSwitchAnchors = msgTypeSwitchConnections.map((item) => {
+      return {
+        id: item.type,
+        type: 'output',
+        name: item.type,
+        isStatic: false,
+        top: 0,
+      };
+    });
+    let routers = msgTypeSwitchConnections.map((item) => item.type);
+    routers = unionBy(routers);
+    routers = configAdditionalInfo?.routers || routers;
+    flowNode.properties.anchors = msgTypeSwitchAnchors;
+    flowNode.properties.formData.routers = routers;
+  }
+
+  if (flowNodeType === 'switch') {
+    flowNode.properties.anchors.push({
+      x: 0,
+      y: 0,
+      id: 'Default',
+      type: 'output',
+      name: 'Default',
+      isStatic: true,
+    });
+    flowNode.properties.formData.cases = generateSwitchNodeFormValue(
+      flowNode?.properties?.formData?.cases || [],
+    );
+  }
+
+  return flowNode;
+}
+
+export function generateFlowEdge(config) {
+  const id = config.id || `edge:${nanoid()}`;
+  const type = config?.properties?.model?.type;
+  const sourceNodeId = config.sourceNodeId;
+  const sourceAnchorId = type;
+  const targetNodeId = config.targetNodeId;
+  const targetAnchorId = `${targetNodeId}_input`;
+  return {
+    id,
+    type: 'custom-bezier',
+    sourceNodeId,
+    sourceAnchorId,
+    targetNodeId,
+    targetAnchorId,
+    text: config.text,
+  };
 }

@@ -10,4 +10,5 @@ export default {
   deleteFlowNodeById: () => useEventBus('deleteFlowNodeById'),
   refreshNodeLog: () => useEventBus('refreshNodeLog'),
   clearNodeFormValidate: () => useEventBus('clearNodeFormValidate'),
+  logicflowNodeMouseUp: () => useEventBus('logicflowNodeMouseUp'),
 };
