@@ -15,6 +15,7 @@ import {
   generateStaticFormData,
   mapFlowDataModelToRuleGoModel,
   mapRuleGoModelToFlowDataModel,
+  generateStaticAnchors,
 } from '@src/pages/workflow/app-design/utils';
 import {
   NODE_DEFAULT_HEIGHT,
