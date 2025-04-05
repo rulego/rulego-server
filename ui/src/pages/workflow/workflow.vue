@@ -134,41 +134,41 @@ async function saveHandler() {
   }
 }
 
-function generateRouters(data, endpointsNode) {
-  const routers = [];
-
-  const params = cloneDeep(bakValue.value);
-  const id = params.ruleChain.id;
-
-  const endpointsNodeAllEdges = data.edges.filter((item) => {
-    return item.sourceNodeId === endpointsNode.id;
-  });
-  const pFormData = endpointsNode.properties.formData;
-  const fRouters = pFormData.routers || [];
-  fRouters.forEach((item) => {
-    const edge = endpointsNodeAllEdges.find(
-      (edge) => edge.sourceAnchorId === item.path,
-    );
-    const toPath = edge ? `${id}:${edge.targetNodeId}` : id;
-    const newItem = {
-      id: item.id,
-      params: [],
-      from: {
-        path: item.path,
-        configuration: null,
-        processors: item.fromProcessors,
-      },
-      to: {
-        path: toPath,
-        configuration: null,
-        wait: false,
-        processors: item.toProcessors,
-      },
-    };
-    routers.push(newItem);
-  });
-  return routers;
-}
+// function generateRouters(data, endpointsNode) {
+//   const routers = [];
+//
+//   const params = cloneDeep(bakValue.value);
+//   const id = params.ruleChain.id;
+//
+//   const endpointsNodeAllEdges = data.edges.filter((item) => {
+//     return item.sourceNodeId === endpointsNode.id;
+//   });
+//   const pFormData = endpointsNode.properties.formData;
+//   const fRouters = pFormData.routers || [];
+//   fRouters.forEach((item) => {
+//     const edge = endpointsNodeAllEdges.find(
+//       (edge) => edge.sourceAnchorId === item.path,
+//     );
+//     const toPath = edge ? `${id}:${edge.targetNodeId}` : id;
+//     const newItem = {
+//       id: item.id,
+//       params: [],
+//       from: {
+//         path: item.path,
+//         configuration: null,
+//         processors: item.fromProcessors,
+//       },
+//       to: {
+//         path: toPath,
+//         configuration: null,
+//         wait: false,
+//         processors: item.toProcessors,
+//       },
+//     };
+//     routers.push(newItem);
+//   });
+//   return routers;
+// }
 
 function handelDesignToJson(){
   appSplitScreenRef.value.handelDesignToJson();

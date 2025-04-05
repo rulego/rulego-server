@@ -361,7 +361,7 @@ export function mapFlowDataModelToRuleGoModel(flowData, oldRuleGoModel) {
   const endpointsNodeIndex = data.nodes.findIndex((item) => {
     return isEndpointNode(item.type, item.properties?.rawNodeType);
   });
-  console.info(endpointsNodeIndex);
+  // console.info(endpointsNodeIndex);
   const endpointsNode = data.nodes[endpointsNodeIndex];
   if (endpointsNodeIndex !== -1) {
     params.metadata.endpoints = [endpointsNode] || [];
@@ -371,7 +371,7 @@ export function mapFlowDataModelToRuleGoModel(flowData, oldRuleGoModel) {
         type = item.properties?.rawNodeType;
       }
       const formData = item.properties.formData;
-      const routers = generateRouters(data, item);
+      const routers = generateRouters(params,data, item);
       let nodeData = {
         id: item.id,
         type,
@@ -475,6 +475,41 @@ export function mapFlowDataModelToRuleGoModel(flowData, oldRuleGoModel) {
   return params;
 }
 
+function generateRouters(params,data, endpointsNode) {
+  const routers = [];
+
+  // const params = cloneDeep(bakValue.value);
+  const id = params.ruleChain.id;
+
+  const endpointsNodeAllEdges = data.edges.filter((item) => {
+    return item.sourceNodeId === endpointsNode.id;
+  });
+  const pFormData = endpointsNode.properties.formData;
+  const fRouters = pFormData.routers || [];
+  fRouters.forEach((item) => {
+    const edge = endpointsNodeAllEdges.find(
+        (edge) => edge.sourceAnchorId === item.path,
+    );
+    const toPath = edge ? `${id}:${edge.targetNodeId}` : id;
+    const newItem = {
+      id: item.id,
+      params: [],
+      from: {
+        path: item.path,
+        configuration: null,
+        processors: item.fromProcessors,
+      },
+      to: {
+        path: toPath,
+        configuration: null,
+        wait: false,
+        processors: item.toProcessors,
+      },
+    };
+    routers.push(newItem);
+  });
+  return routers;
+}
 /**
  *
  * @param {*} ruleGoModel 规则引擎的规则链数据
