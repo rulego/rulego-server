@@ -1,5 +1,5 @@
 <script lang="js" setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount,defineExpose } from 'vue';
 import { useFormItem } from 'element-plus';
 import { basicSetup, EditorView } from 'codemirror';
 import { json } from '@codemirror/lang-json';
@@ -35,6 +35,23 @@ function initEditor() {
   });
 }
 
+// 获取滚动位置
+function getScrollInfo() {
+  if (!editorV) return { x: 0, y: 0 };
+  const scrollDOM = editorV.scrollDOM;
+  return {
+    x: scrollDOM.scrollLeft,
+    y: scrollDOM.scrollTop,
+  };
+}
+
+// 设置滚动位置
+function scrollTo(x, y) {
+  if (!editorV) return;
+  const scrollDOM = editorV.scrollDOM;
+  scrollDOM.scrollTo(x, y);
+}
+
 watch(
   () => props.modelValue,
   (val, oVal) => {
@@ -52,12 +69,22 @@ watch(
   },
 );
 
+function getEditor(){
+  return editorV;
+}
+
 onMounted(() => {
   initEditor();
 });
 
 onBeforeUnmount(() => {
   editorV?.destroy();
+});
+
+defineExpose({
+  getScrollInfo,
+  scrollTo,
+  getEditor,
 });
 </script>
 

@@ -265,10 +265,10 @@ onMounted(() => {
       <!-- 应用管理 -->
       <app-manage v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_MANAGE"
         :base-info-form-state="formState.baseInfoFormState" :variable-state="formState.variableState"
-        @save="saveHandler"></app-manage>
+        @save="saveHandler"/>
       <!-- 应用设计 -->
       <app-design ref="appDesignRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN"
-        :flow-data="flowData"></app-design>
+        v-model="flowData"/>
       <!--源码模式-->
       <app-source-code v-model="flowData" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE" />
       <!-- 分屏模式 -->

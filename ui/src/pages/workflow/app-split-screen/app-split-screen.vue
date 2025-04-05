@@ -1,9 +1,10 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import AppDesign from '@src/pages/workflow/app-design/app-design.vue';
 import AppSourceCode from '@src/pages/workflow/app-source-code/app-source-code.vue';
 import { mapFlowDataModelToRuleGoModel } from '@src/pages/workflow/app-design/utils';
-import { cloneDeep, findKey, uniqBy } from 'lodash-es';
+import { cloneDeep, } from 'lodash-es';
+import EventBus from '@src/utils/event-bus';
 
 const props = defineProps({
   modelValue: {
@@ -13,6 +14,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
+const logicflowNodeMouseUp = EventBus.logicflowNodeMouseUp();
+
 
 const val = ref(cloneDeep(props.modelValue));
 const appDesignRef = ref(null);
@@ -26,17 +29,39 @@ function handelDesignToJson() {
 }
 
 function handelJsonToDesign() {
-  appDesignRef.value.clearFlowData();
-  appDesignRef.value.generateFlowData();
+  appDesignRef.value.rerenderFlowData();
 }
 
 function getData() {
   return this.val.value;
 }
 
+let updateFlowTimeout = null;
 function handelSourceCodeUpdate(newVal) {
   val.value = newVal;
   emit("update:modelValue", val.value);
+
+  //跳过连续输入
+  if (updateFlowTimeout) {
+    clearTimeout(updateFlowTimeout);
+  }
+  updateFlowTimeout = setTimeout(() => {
+    handelJsonToDesign();
+  }, 500);
+}
+
+let updateCodeTimeout = null;
+function handleDesignUpdate(newVal) {
+  val.value = newVal;
+
+  //跳过连续变化
+  if (updateFlowTimeout) {
+    clearTimeout(updateCodeTimeout);
+  }
+
+  updateCodeTimeout = setTimeout(() => {
+    emit("update:modelValue", val.value);
+  }, 500);
 }
 
 watch(
@@ -46,6 +71,20 @@ watch(
   },
   { deep: true }
 );
+
+onMounted(() => {
+  logicflowNodeMouseUp.on(handelDesignToJson);
+})
+
+onBeforeUnmount(() => {
+  logicflowNodeMouseUp.off(handelDesignToJson);
+  if (updateFlowTimeout) {
+    clearTimeout(updateFlowTimeout);
+  }
+  if (updateCodeTimeout) {
+    clearTimeout(updateCodeTimeout);
+  }
+});
 
 defineExpose({
   getData,
@@ -57,7 +96,7 @@ defineExpose({
 <template>
   <div class="flex flex-row h-full">
     <div class="flex-1 overflow-hidden">
-      <app-design :flow-data="val" ref="appDesignRef" />
+      <app-design :model-value="val" @update:model-value="handleDesignUpdate" ref="appDesignRef" />
     </div>
     <div class="flex-1 overflow-hidden">
       <app-source-code :model-value="val" @update:model-value="handelSourceCodeUpdate" ref="appSourceCodeRef" />
