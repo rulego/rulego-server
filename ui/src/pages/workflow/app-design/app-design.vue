@@ -1,7 +1,7 @@
 <script lang="js" setup>
 import { nextTick, onMounted, onBeforeUnmount, ref } from 'vue';
 import { useResizeObserver, watchPausable } from '@vueuse/core';
-import { cloneDeep, isEmpty, isUndefined, merge, unionBy } from 'lodash-es';
+import { cloneDeep, isUndefined } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import EventBus from '@src/utils/event-bus';
 import {
@@ -17,11 +17,7 @@ import {
   mapRuleGoModelToFlowDataModel,
   generateStaticAnchors,
 } from '@src/pages/workflow/app-design/utils';
-import {
-  NODE_DEFAULT_HEIGHT,
-  NODE_DEFAULT_WIDTH,
-  NODE_TYPE_MAP,
-} from '@src/pages/workflow/app-design/constant';
+import { NODE_TYPE_MAP } from '@src/pages/workflow/app-design/constant';
 import { nodeUtils } from '@src/utils/flow-utils';
 import { locales } from '@src/constant/node-component-data';
 import FlowView from '@src/pages/workflow/app-design/flow-view.vue';
@@ -476,39 +472,39 @@ defineExpose({
 
 <template>
   <div class="relative h-full w-full overflow-hidden" ref="containerRef">
-    <flow-view
-      ref="flowViewRef"
-      :nodes="nodes"
-      :edges="edges"
+    <flow-view 
+      ref="flowViewRef" 
+      :nodes="nodes" 
+      :edges="edges" 
       @anchorClick="anchorClickHandler"
-      @update-node-properties="flowNodeUpdateNodePropertiesHandler"
+      @update-node-properties="flowNodeUpdateNodePropertiesHandler" 
       @selected="setSelectedNodeModel"
-      @addComment="handleAddComment"
+      @addComment="handleAddComment" 
     />
-    <node-list
-      ref="nodeListRef"
-      :rootReact="containerReact"
-      :x="menuListX"
-      :y="menuListY"
+    <node-list 
+      ref="nodeListRef" 
+      :rootReact="containerReact" 
+      :x="menuListX" 
+      :y="menuListY" 
       :menu-list="menuList"
-      @selected="nodeListSelectedHandler"
+      @selected="nodeListSelectedHandler" 
     />
-    <node-form
-      v-if="selectedNodeModel"
-      ref="nodeFormRef"
-      :key="selectedNodeModel.id"
+    <node-form 
+      v-if="selectedNodeModel" 
+      ref="nodeFormRef" 
+      :key="selectedNodeModel.id" 
       :nodeType="selectedNodeModel.type"
-      :model="formData"
-      :fields="fields"
+      :model="formData" 
+      :fields="fields" 
       :next-data="nextNodes"
-      :anchor-can-connect-only-one-node="anchorCanConnectOnlyOneNode"
+      :anchor-can-connect-only-one-node="anchorCanConnectOnlyOneNode" 
       :selected-node-id="selectedNodeModel.id"
-      :chain-id="props.modelValue?.ruleChain?.id"
-      @add="nodeFormAddHandler"
+      :chain-id="props.modelValue?.ruleChain?.id" 
+      @add="nodeFormAddHandler" 
     />
-    <run-drawer
-      ref="runDrawerRef"
-      :flow-data="props.modelValue"
+    <run-drawer 
+      ref="runDrawerRef" 
+      :flow-data="props.modelValue" 
     />
   </div>
 </template>
