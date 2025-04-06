@@ -1,29 +1,23 @@
 <script lang="js" setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { cloneDeep, findKey, uniqBy } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { ElMessage } from 'element-plus';
 import * as Api from '@src/api';
 import { WORKFLOW_MENU_KEY } from '@src/constant/workflow';
-import {
-  ENDPOINTS_NODE_TYPE_KEYS,
-  NODE_TYPE_MAP,
-} from '@src/pages/workflow/app-design/constant';
-import {
-  generateSwitchNodeFormCasesValue,
-  isEndpointNode,
-  mapFlowDataModelToRuleGoModel,
-} from '@src/pages/workflow/app-design/utils';
+import { mapFlowDataModelToRuleGoModel } from '@src/pages/workflow/app-design/utils';
 import AppManage from '@src/pages/workflow/app-manage/app-manage.vue';
 import AppDesign from '@src/pages/workflow/app-design/app-design.vue';
 import AppSourceCode from '@src/pages/workflow/app-source-code/app-source-code.vue';
 import AppSplitScreen from '@src/pages/workflow/app-split-screen/app-split-screen.vue';
-
+import RunDrawer from '@src/pages/workflow/app-design/run-drawer/run-drawer.vue';
 const router = useRouter();
 const route = useRoute();
 
 const appDesignRef = ref();
 const appSplitScreenRef = ref();
+const runDrawerRef = ref();
+
 const menuList = ref([
   {
     key: WORKFLOW_MENU_KEY.APP_MANAGE,
@@ -134,52 +128,6 @@ async function saveHandler() {
   }
 }
 
-// function generateRouters(data, endpointsNode) {
-//   const routers = [];
-//
-//   const params = cloneDeep(bakValue.value);
-//   const id = params.ruleChain.id;
-//
-//   const endpointsNodeAllEdges = data.edges.filter((item) => {
-//     return item.sourceNodeId === endpointsNode.id;
-//   });
-//   const pFormData = endpointsNode.properties.formData;
-//   const fRouters = pFormData.routers || [];
-//   fRouters.forEach((item) => {
-//     const edge = endpointsNodeAllEdges.find(
-//       (edge) => edge.sourceAnchorId === item.path,
-//     );
-//     const toPath = edge ? `${id}:${edge.targetNodeId}` : id;
-//     const newItem = {
-//       id: item.id,
-//       params: [],
-//       from: {
-//         path: item.path,
-//         configuration: null,
-//         processors: item.fromProcessors,
-//       },
-//       to: {
-//         path: toPath,
-//         configuration: null,
-//         wait: false,
-//         processors: item.toProcessors,
-//       },
-//     };
-//     routers.push(newItem);
-//   });
-//   return routers;
-// }
-
-function handelDesignToJson(){
-  appSplitScreenRef.value.handelDesignToJson();
-}
-
-function handelJsonToDesign(){
-  appSplitScreenRef.value.handelJsonToDesign();
-}
-
-
-
 async function saveFlowHandler() {
   let ruleGoModel;
 
@@ -206,7 +154,7 @@ async function saveFlowHandler() {
 }
 
 function openDrawerHandler() {
-  appDesignRef.value.openDrawer();
+  runDrawerRef.value.open();
 }
 
 onMounted(() => {
@@ -236,28 +184,13 @@ onMounted(() => {
         {{ bakValue?.ruleChain?.name || '应用名称' }}
       </div>
       <div class="min-w-[204px] flex-none px-4">
-        <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN">
+        <template v-if="[
+          WORKFLOW_MENU_KEY.APP_DESIGN, 
+          WORKFLOW_MENU_KEY.APP_SOURCE_CODE, 
+          WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN].includes(menuActiveKey)
+        ">
           <el-button icon="el-icon-video-play" @click="openDrawerHandler">测试</el-button>
-          <el-button icon="el-icon-setting" type="primary" @click="saveFlowHandler">保存</el-button>
-        </template>
-        <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE">
-          <div class="flex flex-row justify-end">
-            <el-button icon="el-icon-upload-filled" type="primary" @click="saveFlowHandler">保存代码</el-button>
-          </div>
-        </template>
-        <template v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN">
-          <div class="flex flex-row justify-end">
-            <el-button @click="handelDesignToJson" type="primary">图->json</el-button>
-            <el-button @click="handelJsonToDesign" type="primary">图<-json</el-button>
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              content="只会保存json,请把图同步到json中"
-              placement="left"
-            >
-              <el-button icon="el-icon-upload-filled" type="primary" @click="saveFlowHandler">保存代码</el-button>
-            </el-tooltip>
-          </div>
+          <el-button icon="el-icon-upload-filled" type="primary" @click="saveFlowHandler">保存</el-button>
         </template>
       </div>
     </div>
@@ -274,6 +207,7 @@ onMounted(() => {
       <!-- 分屏模式 -->
       <app-split-screen ref="appSplitScreenRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN" v-model="flowData" />
     </div>
+    <run-drawer ref="runDrawerRef" :flow-data="flowData" />
   </div>
 </template>
 
