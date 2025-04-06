@@ -13,6 +13,7 @@ const EXTEND_NODE_TYPE_MAP = {
   start: 'start',
 };
 import { cloneDeep, isEmpty, findKey, unionBy,uniqBy } from 'lodash-es';
+import {nanoid} from "nanoid";
 
 export async function generateComponentList() {
   try {
@@ -911,6 +912,30 @@ export function generateFlowNode(config, connections, menuList) {
   }
 
   return flowNode;
+}
+
+function generateSwitchNodeFormValue(val) {
+  return val.map((item, index) => {
+    let caseList = nodeUtils.expr2json(item.case);
+    let then = item.then;
+    caseList = caseList.map((item) => {
+      return {
+        id: nanoid(),
+        value: item.map((cItem) => {
+          return {
+            ...cItem,
+            id: nanoid(),
+          };
+        }),
+      };
+    });
+    return {
+      id: nanoid(),
+      name: index > 0 ? 'ELSE IF' : 'IF',
+      label: `${then || 'CASE ' + (index + 1)}`,
+      caseList,
+    };
+  });
 }
 
 export function generateFlowEdge(config) {
