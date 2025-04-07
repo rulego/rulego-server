@@ -152,7 +152,6 @@ function clearFlowData() {
 function rerenderFlowData() {
   if (!flowViewRef.value) return;
   const lf = flowViewRef.value.getLf();
-  // 保存当前视图的偏移和缩放状态
   const userData = cloneDeep(props.modelValue);
   const { nodes, edges } = mapRuleGoModelToFlowDataModel(userData, menuList.value);
 
@@ -449,6 +448,10 @@ function closeDrawer() {
   runDrawerRef.value.close();
 }
 
+function getLf() {
+  return flowViewRef.value.getLf();
+}
+
 onMounted(async () => {
   await initMenuList();
   generateFlowData();
@@ -462,6 +465,7 @@ onBeforeUnmount(() => {
 
 defineExpose({
   getData,
+  getLf,
   clearFlowData,
   generateFlowData,
   rerenderFlowData,

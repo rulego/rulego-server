@@ -12,25 +12,10 @@ const emit = defineEmits(["update:modelValue"]);
 
 const val = ref(props.modelValue);
 const jsonEditorRef = ref(null);
-const scrollPosition = ref({ x: 0, y: 0 }); // 保存滚动位置
 
 watch(() => props.modelValue, async (newValue) => {
-  console.log('newValue', newValue);
-  const editor = jsonEditorRef.value;
-  // 保存当前滚动位置
-  scrollPosition.value = editor.getScrollInfo();
   val.value = newValue;
-  // 等待 DOM 更新完成后恢复滚动位置
-  await nextTick();
-  const { x, y } = scrollPosition.value;
-  console.log('scrollTo', x, y);
-  editor.scrollTo(x, y);
-
-}, { immediate: true });
-
-watch(val, (newValue) => {
-  emit("update:modelValue", newValue);
-});
+}, { deep: true });
 
 const computedValue = computed(() => {
   if (typeof val.value === 'string') {
@@ -49,15 +34,23 @@ const computedValue = computed(() => {
 function handelUpdate(updatedValue) {
   try {
     val.value = JSON.parse(updatedValue);
+    emit("update:modelValue", val.value);
   } catch (e) {
     console.error("Invalid JSON:", e);
   }
 }
 
+function setValue(value) {
+  val.value = value;
+}
+
+function getData() {
+  return computedValue.value;
+}
+
 defineExpose({
-  getData() {
-    return computedValue.value;
-  }
+  setValue,
+  getData
 });
 
 </script>
