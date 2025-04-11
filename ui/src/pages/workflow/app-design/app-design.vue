@@ -43,8 +43,6 @@ const props = defineProps({
  */
 const emit = defineEmits(['update:modelValue']);
 
-
-
 const closeNodeFormBus = EventBus.closeNodeForm();
 const showNodeMenuBus = EventBus.showNodeMenu();
 const changeFlowNodeBus = EventBus.changeFlowNode();
@@ -146,20 +144,22 @@ function clearFlowData() {
   nodes.value = [];
   edges.value = [];
   flowViewRef.value.getLf().clearData();
-
 }
 
 function rerenderFlowData() {
   if (!flowViewRef.value) return;
   const lf = flowViewRef.value.getLf();
   const userData = cloneDeep(props.modelValue);
-  const { nodes, edges } = mapRuleGoModelToFlowDataModel(userData, menuList.value);
+  const { nodes, edges } = mapRuleGoModelToFlowDataModel(
+    userData,
+    menuList.value,
+  );
 
   //  重新渲染数据
   lf.renderRawData({
     nodes,
-    edges
-  })
+    edges,
+  });
 }
 
 function generateFlowData() {
@@ -167,7 +167,10 @@ function generateFlowData() {
 
   // 接口请求的数据
   const userData = cloneDeep(props.modelValue);
-  const { nodes: tNodes, edges: tEdges } = mapRuleGoModelToFlowDataModel(userData, menuList.value);
+  const { nodes: tNodes, edges: tEdges } = mapRuleGoModelToFlowDataModel(
+    userData,
+    menuList.value,
+  );
 
   nodes.value = tNodes;
   edges.value = tEdges;
@@ -282,7 +285,6 @@ function nodeListSelectedHandler(item) {
 
   if (addType.value === 'change-node') {
     changeFlowNodeBus.emit(node);
-
   }
 }
 
@@ -358,8 +360,8 @@ closeNodeFormBus.on(nodeFormCloseHandler);
 showNodeMenuBus.on(showNodeMenuHandler);
 
 /**
-* 派发更新事件
-*/
+ * 派发更新事件
+ */
 function handleEmitUpdate() {
   const logicFlowData = getData();
   const ruleGoData = mapFlowDataModelToRuleGoModel(
@@ -452,6 +454,12 @@ function getLf() {
   return flowViewRef.value.getLf();
 }
 
+function render() {
+  if (!flowViewRef.value) return;
+  rerenderFlowData();
+  flowViewRef.value.updateAllNodePropertiesHeight();
+}
+
 onMounted(async () => {
   await initMenuList();
   generateFlowData();
@@ -460,7 +468,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown);
-  handleEmitUpdate();// 组件卸载时触发更新事件
+  handleEmitUpdate(); // 组件卸载时触发更新事件
 });
 
 defineExpose({
@@ -471,44 +479,42 @@ defineExpose({
   rerenderFlowData,
   openDrawer,
   closeDrawer,
+  render,
 });
 </script>
 
 <template>
   <div class="relative h-full w-full overflow-hidden" ref="containerRef">
-    <flow-view 
-      ref="flowViewRef" 
-      :nodes="nodes" 
-      :edges="edges" 
+    <flow-view
+      ref="flowViewRef"
+      :nodes="nodes"
+      :edges="edges"
       @anchorClick="anchorClickHandler"
-      @update-node-properties="flowNodeUpdateNodePropertiesHandler" 
+      @update-node-properties="flowNodeUpdateNodePropertiesHandler"
       @selected="setSelectedNodeModel"
-      @addComment="handleAddComment" 
+      @addComment="handleAddComment"
     />
-    <node-list 
-      ref="nodeListRef" 
-      :rootReact="containerReact" 
-      :x="menuListX" 
-      :y="menuListY" 
+    <node-list
+      ref="nodeListRef"
+      :rootReact="containerReact"
+      :x="menuListX"
+      :y="menuListY"
       :menu-list="menuList"
-      @selected="nodeListSelectedHandler" 
+      @selected="nodeListSelectedHandler"
     />
-    <node-form 
-      v-if="selectedNodeModel" 
-      ref="nodeFormRef" 
-      :key="selectedNodeModel.id" 
+    <node-form
+      v-if="selectedNodeModel"
+      ref="nodeFormRef"
+      :key="selectedNodeModel.id"
       :nodeType="selectedNodeModel.type"
-      :model="formData" 
-      :fields="fields" 
+      :model="formData"
+      :fields="fields"
       :next-data="nextNodes"
-      :anchor-can-connect-only-one-node="anchorCanConnectOnlyOneNode" 
+      :anchor-can-connect-only-one-node="anchorCanConnectOnlyOneNode"
       :selected-node-id="selectedNodeModel.id"
-      :chain-id="props.modelValue?.ruleChain?.id" 
-      @add="nodeFormAddHandler" 
+      :chain-id="props.modelValue?.ruleChain?.id"
+      @add="nodeFormAddHandler"
     />
-    <run-drawer 
-      ref="runDrawerRef" 
-      :flow-data="props.modelValue" 
-    />
+    <run-drawer ref="runDrawerRef" :flow-data="props.modelValue" />
   </div>
 </template>
