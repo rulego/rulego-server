@@ -72,10 +72,10 @@ function setSelectedNodeId(id) {
 
 /**
  * Handles an event with the provided data.
- * 
+ *
  * @param {{data:any,e:Event}} evt - The data associated with the event.
  */
-function handleMouseup(evt){
+function handleMouseup(evt) {
   logicflowNodeMouseUp.emit(evt);
   emit('mouseup', evt);
 }
@@ -220,7 +220,10 @@ function updateNodePropertiesNextNodesById(nodeId) {
       .map((node) => {
         return {
           nodeId: node.id,
-          nodeTitle: node.properties?.formData?.title ||node.properties?.formData?.additionalInfo?.title || '未命名',
+          nodeTitle:
+            node.properties?.formData?.title ||
+            node.properties?.formData?.additionalInfo?.title ||
+            '未命名',
         };
       });
 
@@ -508,7 +511,7 @@ function initFlow() {
   lf.on('node:click', flowNodeClickHandler);
   lf.on('custom:anchor-click', flowAnchorClickHandler);
   lf.on('anchor:drop', flowAnchorDropHandler);
-  lf.on('node:mouseup',handleMouseup);
+  lf.on('node:mouseup', handleMouseup);
 
   flowNodes.forEach((node) => {
     register(node, lf);
@@ -595,6 +598,7 @@ function lfGetGraphRawData() {
 
 async function lfRender() {
   if (!lf) return;
+  lf.clearData();
   await nextTick();
   flowData.value.nodes.forEach((item) => {
     lf.addNode(item);
@@ -840,6 +844,7 @@ defineExpose({
   getSelectedNode,
   addCommentNode,
   getLf,
+  updateAllNodePropertiesHeight,
 });
 </script>
 
