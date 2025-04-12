@@ -5,17 +5,13 @@ import { cloneDeep } from 'lodash-es';
 import { ElMessage } from 'element-plus';
 import * as Api from '@src/api';
 import { WORKFLOW_MENU_KEY } from '@src/constant/workflow';
-import { mapFlowDataModelToRuleGoModel } from '@src/pages/workflow/app-design/utils';
 import AppManage from '@src/pages/workflow/app-manage/app-manage.vue';
-import AppDesign from '@src/pages/workflow/app-design/app-design.vue';
-import AppSourceCode from '@src/pages/workflow/app-source-code/app-source-code.vue';
-import AppSplitScreen from '@src/pages/workflow/app-split-screen/app-split-screen.vue';
+import AppDesignNew from '@src/pages/workflow/app-design-new/app-design-new.vue';
 import RunDrawer from '@src/pages/workflow/app-design/run-drawer/run-drawer.vue';
 const router = useRouter();
 const route = useRoute();
 
-const appDesignRef = ref();
-const appSplitScreenRef = ref();
+const appDesignNewRef = ref();
 const runDrawerRef = ref();
 
 const menuList = ref([
@@ -26,14 +22,6 @@ const menuList = ref([
   {
     key: WORKFLOW_MENU_KEY.APP_DESIGN,
     label: '应用设计',
-  },
-  {
-    key: WORKFLOW_MENU_KEY.APP_SOURCE_CODE,
-    label: '源码模式',
-  },
-  {
-    key: WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN,
-    label: '分屏模式',
   },
 ]);
 const menuActiveKey = ref(WORKFLOW_MENU_KEY.APP_MANAGE);
@@ -129,23 +117,7 @@ async function saveHandler() {
 }
 
 async function saveFlowHandler() {
-  let ruleGoModel;
-
-  if(menuActiveKey.value === WORKFLOW_MENU_KEY.APP_DESIGN){
-    const flow = appDesignRef.value.getData();
-    ruleGoModel = mapFlowDataModelToRuleGoModel(flow,bakValue.value);
-  }
-  else if(menuActiveKey.value === WORKFLOW_MENU_KEY.APP_SOURCE_CODE){
-    ruleGoModel = flowData.value;
-  }
-  else if(menuActiveKey.value === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN){
-    ruleGoModel = flowData.value;
-  }
-
-  if(!ruleGoModel) {
-    ElMessage.error('请先设计应用');
-    return;
-  }
+  const ruleGoModel =flowData.value;
   const id = ruleGoModel.ruleChain.id;
   await Api.setRules(id, ruleGoModel);
   await refreshFormState();
@@ -184,11 +156,7 @@ onMounted(() => {
         {{ bakValue?.ruleChain?.name || '应用名称' }}
       </div>
       <div class="min-w-[204px] flex-none px-4">
-        <template v-if="[
-          WORKFLOW_MENU_KEY.APP_DESIGN, 
-          WORKFLOW_MENU_KEY.APP_SOURCE_CODE, 
-          WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN].includes(menuActiveKey)
-        ">
+        <template v-if="[WORKFLOW_MENU_KEY.APP_DESIGN].includes(menuActiveKey)">
           <el-button icon="el-icon-video-play" @click="openDrawerHandler">测试</el-button>
           <el-button icon="el-icon-upload-filled" type="primary" @click="saveFlowHandler">保存</el-button>
         </template>
@@ -200,12 +168,8 @@ onMounted(() => {
         :base-info-form-state="formState.baseInfoFormState" :variable-state="formState.variableState"
         @save="saveHandler"/>
       <!-- 应用设计 -->
-      <app-design ref="appDesignRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN"
+      <app-design-new ref="appDesignNewRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_DESIGN"
         v-model="flowData"/>
-      <!--源码模式-->
-      <app-source-code v-model="flowData" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SOURCE_CODE" />
-      <!-- 分屏模式 -->
-      <app-split-screen ref="appSplitScreenRef" v-if="menuActiveKey === WORKFLOW_MENU_KEY.APP_SPLIT_SCREEN" v-model="flowData" />
     </div>
     <run-drawer ref="runDrawerRef" :flow-data="flowData" />
   </div>
