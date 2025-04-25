@@ -7,9 +7,23 @@ const (
 	DirWorkflowsRun       = "runs"
 	DirWorkflowsRule      = "rules"
 	DirWorkflowsComponent = "components"
+	// DirWorkflowsShareNodes 共享节点目录
+	DirWorkflowsShareNodes = "sharenodes"
+	// DirShareNode 共享普通节点目录
+	DirShareNode = "node"
+	// DirShareEndpoint 共享端点目录
+	DirShareEndpoint = "endpoint"
 	// FileNameIndex 索引文件名
 	FileNameIndex = "index"
 )
+
+// GetShareNodesDir 获取共享节点目录
+func GetShareNodesDir() []string {
+	return []string{
+		DirShareNode,
+		DirShareEndpoint,
+	}
+}
 
 const (
 	KeyMsgType         = "msgType"
@@ -73,7 +87,7 @@ const (
 // LoadLuaLibs 加载lua库key
 const LoadLuaLibs = "load_lua_libs"
 
-//const (
+// const (
 //	DefaultPoolDef = `
 //	{
 //	  "ruleChain": {
@@ -94,5 +108,5 @@ const LoadLuaLibs = "load_lua_libs"
 //		]
 //	  }
 //	}
-//`
-//)
+// `
+// )

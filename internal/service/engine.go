@@ -39,13 +39,15 @@ func NewUserRuleEngineServiceImpl(c config.Config) (*UserRuleEngineService, erro
 		config: c,
 	}
 	userPath := path.Join(c.DataDir, constants.DirWorkflows)
-	//创建文件夹
+	// 创建文件夹
+	logger.Logger.Println("userPath:", userPath)
 	_ = fs.CreateDirs(userPath)
 
 	entries, err := os.ReadDir(userPath)
 	if err != nil {
 		return nil, err
 	}
+
 	for _, entry := range entries {
 		if entry.IsDir() {
 			if _, err := s.Init(entry.Name()); err != nil {
@@ -53,7 +55,7 @@ func NewUserRuleEngineServiceImpl(c config.Config) (*UserRuleEngineService, erro
 			}
 		}
 	}
-	//初始化内置用户
+	// 初始化内置用户
 	for user := range c.Users {
 		if _, ok := s.Get(user); !ok {
 			if err := s.createUser(user); err != nil {
@@ -61,7 +63,7 @@ func NewUserRuleEngineServiceImpl(c config.Config) (*UserRuleEngineService, erro
 			}
 		}
 	}
-	//检查是否有默认用户
+	// 检查是否有默认用户
 	if _, ok := s.Get(c.DefaultUsername); !ok {
 		if err := s.createUser(c.DefaultUsername); err != nil {
 			logger.Logger.Println("Init "+c.DefaultUsername+" error:", err.Error())
@@ -107,8 +109,8 @@ type RuleEngineService struct {
 	config     config.Config
 	ruleConfig types.Config
 	logger     *log.Logger
-	//基于内存的节点调试数据管理器
-	//如果需要查询历史数据，请把调试日志数据存放数据库等可以持久化载体
+	// 基于内存的节点调试数据管理器
+	// 如果需要查询历史数据，请把调试日志数据存放数据库等可以持久化载体
 	ruleChainDebugData *RuleChainDebugData
 	onDebugObserver    map[string]*DebugObserver
 	ruleDao            *dao.RuleDao
@@ -117,10 +119,12 @@ type RuleEngineService struct {
 	mainRuleEngine     types.RuleEngine
 	componentService   *ComponentService
 	mcpService         *McpService
+	// shareNodeService 共享节点服务
+	shareNodeService *ShareNodeService
 }
 
 func NewRuleEngineServiceAndInitRuleGo(c config.Config, username string) (*RuleEngineService, error) {
-	//隔离每个用户的自定义组价注册器
+	// 隔离每个用户的自定义组价注册器
 	componentRegistry := engine.NewCustomComponentRegistry(engine.Registry, new(engine.RuleComponentRegistry))
 	ruleConfig := rulego.NewConfig(types.WithDefaultPool(),
 		types.WithLogger(logger.Logger),
@@ -132,9 +136,9 @@ func NewRuleEngineServiceAndInitRuleGo(c config.Config, username string) (*RuleE
 	if err != nil {
 		return nil, err
 	}
-	//初始化规则链
+	// 初始化规则链
 	service.InitRuleGo(logger.Logger, c.DataDir, username)
-	//加载自定义组件
+	// 加载自定义组件
 	service.componentService.LoadComponents()
 	if service.mcpService != nil {
 		service.mcpService.LoadTools()
@@ -168,19 +172,26 @@ func NewRuleEngineService(c config.Config, ruleConfig types.Config, username str
 		}
 	}
 	componentService.mcpService = mcpService
+
+	shareNodeService, err := NewShareNodeService(c, username)
+	if err != nil {
+		return nil, err
+	}
+
 	service := &RuleEngineService{
 		Pool:            pool,
 		username:        username,
 		logger:          logger.Logger,
 		config:          c,
 		onDebugObserver: make(map[string]*DebugObserver),
-		//基于内存的节点调试数据管理器
+		// 基于内存的节点调试数据管理器
 		ruleChainDebugData: NewRuleChainDebugData(maxNodeLogSize),
 		ruleDao:            ruleDao,
 		ruleConfig:         ruleConfig,
 		userSettingDao:     userSettingDao,
 		componentService:   componentService,
 		mcpService:         mcpService,
+		shareNodeService:   shareNodeService,
 	}
 	if mcpService != nil {
 		mcpService.ruleEngineService = service
@@ -196,6 +207,11 @@ func (s *RuleEngineService) ComponentService() *ComponentService {
 }
 func (s *RuleEngineService) MCPService() *McpService {
 	return s.mcpService
+}
+
+// ShareNodeService 共享节点服务
+func (s *RuleEngineService) ShareNodeService() *ShareNodeService {
+	return s.shareNodeService
 }
 
 func (s *RuleEngineService) ExecuteAndWait(chainId string, msg types.RuleMsg, opts ...types.RuleContextOption) error {
@@ -226,7 +242,7 @@ func (s *RuleEngineService) GetLatest() ([]byte, error) {
 
 // SaveAndLoad 保存或者更新DSL,并根据规则链状态部署或下架规则
 func (s *RuleEngineService) SaveAndLoad(chainId string, def []byte) error {
-	//设置最新修改规则链
+	// 设置最新修改规则链
 	_ = s.userSettingDao.Save(constants.SettingKeyLatestChainId, chainId)
 
 	var err error
@@ -235,23 +251,23 @@ func (s *RuleEngineService) SaveAndLoad(chainId string, def []byte) error {
 	if err != nil {
 		return err
 	}
-	//修改更新时间
+	// 修改更新时间
 	s.fillAdditionalInfo(&ruleChain)
 
 	b, err := json.Marshal(ruleChain)
 	if err != nil {
 		return err
 	}
-	//持久化规则链
+	// 持久化规则链
 	if err = s.ruleDao.Save(s.username, chainId, b); err != nil {
 		return err
 	}
 
 	if ruleChain.RuleChain.Disabled {
-		//下架规则
+		// 下架规则
 		return s.Undeploy(chainId)
 	} else {
-		//部署规则链
+		// 部署规则链
 		return s.Deploy(chainId)
 	}
 }
@@ -274,7 +290,7 @@ func (s *RuleEngineService) Delete(chainId string) error {
 // SaveBaseInfo 保存规则链基本信息
 func (s *RuleEngineService) SaveBaseInfo(chainId string, baseInfo types.RuleChainBaseInfo) error {
 	if chainId != "" {
-		//设置最新修改规则链
+		// 设置最新修改规则链
 		_ = s.userSettingDao.Save(constants.SettingKeyLatestChainId, chainId)
 
 		ruleEngine, ok := s.Pool.Get(chainId)
@@ -285,13 +301,13 @@ func (s *RuleEngineService) SaveBaseInfo(chainId string, baseInfo types.RuleChai
 			def.RuleChain.Root = baseInfo.Root
 			def.RuleChain.DebugMode = baseInfo.DebugMode
 			_ = maps.Map2Struct(baseInfo.Configuration, &def.RuleChain.Configuration)
-			//填充更新时间
+			// 填充更新时间
 			s.fillAdditionalInfo(def)
 		} else {
 			def := types.RuleChain{
 				RuleChain: baseInfo,
 			}
-			//修改更新时间
+			// 修改更新时间
 			s.fillAdditionalInfo(&def)
 			jsonStr, _ := json.Marshal(def)
 			if e, err := s.Pool.New(chainId, jsonStr, rulego.WithConfig(s.ruleConfig)); nil != err {
@@ -310,7 +326,7 @@ func (s *RuleEngineService) SaveBaseInfo(chainId string, baseInfo types.RuleChai
 // SaveConfiguration 保存规则链配置
 func (s *RuleEngineService) SaveConfiguration(chainId string, key string, configuration interface{}) error {
 	if chainId != "" {
-		//设置最新修改规则链
+		// 设置最新修改规则链
 		_ = s.userSettingDao.Save(constants.SettingKeyLatestChainId, chainId)
 
 		ruleEngine, ok := s.Pool.Get(chainId)
@@ -321,7 +337,7 @@ func (s *RuleEngineService) SaveConfiguration(chainId string, key string, config
 			}
 			self.RuleChain.Configuration[key] = configuration
 
-			//修改更新时间
+			// 修改更新时间
 			s.fillAdditionalInfo(self)
 
 			if err := ruleEngine.ReloadSelf(ruleEngine.DSL()); err != nil {
@@ -381,7 +397,7 @@ func (s *RuleEngineService) Load(chainId string) error {
 		_, err = s.Pool.New(chainId, def, rulego.WithConfig(s.ruleConfig))
 	}
 	if err != nil {
-		//s.ruleConfig.Logger.Printf("chainId:%s load error: %s", chainId, err.Error())
+		// s.ruleConfig.Logger.Printf("chainId:%s load error: %s", chainId, err.Error())
 		var ruleChain types.RuleChain
 		jsonErr := json.Unmarshal(def, &ruleChain)
 		if jsonErr != nil {
@@ -412,7 +428,7 @@ func (s *RuleEngineService) Undeploy(chainId string) error {
 	if err != nil {
 		return err
 	}
-	//持久化规则链
+	// 持久化规则链
 	err = s.ruleDao.Save(s.username, chainId, b)
 	if err != nil {
 		return err
@@ -488,11 +504,11 @@ func (s *RuleEngineService) DebugData() *RuleChainDebugData {
 // InitRuleGo 初始化规则链池
 func (s *RuleEngineService) InitRuleGo(logger *log.Logger, workspacePath string, username string) {
 	var ruleConfig = s.ruleConfig
-	//加载自定义配置
+	// 加载自定义配置
 	for k, v := range s.config.Global {
 		ruleConfig.Properties.PutValue(k, v)
 	}
-	//加载lua第三方库
+	// 加载lua第三方库
 	ruleConfig.Properties.PutValue(constants.LoadLuaLibs, s.config.LoadLuaLibs)
 	ruleConfig.Properties.PutValue(action.KeyExecNodeWhitelist, s.config.CmdWhiteList)
 	ruleConfig.Properties.PutValue(action.KeyWorkDir, s.config.DataDir)
@@ -513,48 +529,48 @@ func (s *RuleEngineService) InitRuleGo(logger *log.Logger, workspacePath string,
 		if s.config.Debug {
 			logger.Printf("chainId=%s,flowType=%s,nodeId=%s,data=%s,err=%s", chainId, flowType, nodeId, msg.Data, err)
 		}
-		//把日志记录到内存管理器，用于界面显示
+		// 把日志记录到内存管理器，用于界面显示
 		s.ruleChainDebugData.Add(chainId, nodeId, DebugData{
 			Ts: time.Now().UnixMilli(),
-			//节点ID
+			// 节点ID
 			NodeId: nodeId,
-			//流向OUT/IN
+			// 流向OUT/IN
 			FlowType: flowType,
-			//消息
+			// 消息
 			Msg: msg,
-			//关系
+			// 关系
 			RelationType: relationType,
-			//Err 错误
+			// Err 错误
 			Err: errStr,
 		})
 		s.OnDebug(chainId, flowType, nodeId, msg, relationType, err)
 	}
 	s.ruleConfig = ruleConfig
 
-	//加载js
+	// 加载js
 	jsPath := path.Join(workspacePath, "js")
 	err := s.loadJs(jsPath)
 	if err != nil {
 		s.logger.Printf("parser js file error:", err)
 	}
 
-	//加载组件插件
+	// 加载组件插件
 	pluginsPath := path.Join(workspacePath, "plugins")
 	err = s.loadPlugins(pluginsPath)
 	if err != nil {
 		s.logger.Printf("parser plugin file error:", err)
 	}
 
-	//加载规则链
+	// 加载规则链
 	rulesPath := path.Join(workspacePath, constants.DirWorkflows, username, constants.DirWorkflowsRule)
 	_ = s.loadRules(rulesPath)
 }
 
 // 加载js
 func (s *RuleEngineService) loadJs(folderPath string) error {
-	//创建文件夹
+	// 创建文件夹
 	_ = fs.CreateDirs(folderPath)
-	//遍历所有文件
+	// 遍历所有文件
 	paths, err := fs.GetFilePaths(folderPath + "/*.js")
 	if err != nil {
 		return err
@@ -577,9 +593,9 @@ func (s *RuleEngineService) loadJs(folderPath string) error {
 
 // 加载组件插件
 func (s *RuleEngineService) loadPlugins(folderPath string) error {
-	//创建文件夹
+	// 创建文件夹
 	_ = fs.CreateDirs(folderPath)
-	//遍历所有文件
+	// 遍历所有文件
 	paths, err := fs.GetFilePaths(folderPath + "/*.so")
 	if err != nil {
 		return err
@@ -594,9 +610,9 @@ func (s *RuleEngineService) loadPlugins(folderPath string) error {
 
 // 加载规则链
 func (s *RuleEngineService) loadRules(folderPath string) error {
-	//创建文件夹
+	// 创建文件夹
 	_ = fs.CreateDirs(folderPath)
-	//遍历所有.json文件
+	// 遍历所有.json文件
 	folderPath = folderPath + "/*.json"
 	// Get all file paths that match the pattern.
 	paths, err := fs.GetFilePaths(folderPath)
@@ -615,7 +631,7 @@ func (s *RuleEngineService) loadRules(folderPath string) error {
 		}
 	}
 	s.logger.Printf("%s number of rule chains loaded :%d", s.username, count)
-	//加载主规则链
+	// 加载主规则链
 	if mainChainId := s.userSettingDao.Get(constants.SettingKeyMainChainId); mainChainId != "" {
 		if err := s.SetMainChainId(mainChainId); err != nil {
 			s.logger.Printf("load %s main rule chain error: %s", s.username, err.Error())
@@ -629,7 +645,7 @@ func (s *RuleEngineService) loadRules(folderPath string) error {
 
 // fillAdditionalInfo 填充扩展字段
 func (s *RuleEngineService) fillAdditionalInfo(def *types.RuleChain) {
-	//修改更新时间
+	// 修改更新时间
 	if def.RuleChain.AdditionalInfo == nil {
 		def.RuleChain.AdditionalInfo = make(map[string]interface{})
 	}
