@@ -17,6 +17,13 @@ const (
 	FileNameIndex = "index"
 )
 
+const (
+	// TypeShareNode 共享普通节点类型
+	TypeShareNode = DirShareNode
+	// TypeShareEndpoint 共享端点类型
+	TypeShareEndpoint = DirShareEndpoint
+)
+
 // GetShareNodesDir 获取共享节点目录
 func GetShareNodesDir() []string {
 	return []string{

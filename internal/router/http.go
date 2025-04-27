@@ -65,15 +65,15 @@ func NewRestServe(config config.Config) *rest.Endpoint {
 	/**   共享组件相关路由  **/
 
 	// 获取共享组件列表
-	restEndpoint.GET(controller.NewShareNode().ListShareNodes(apiBasePath + "/" + moduleSharedNodes))
+	restEndpoint.GET(controller.NewShareNodeHttpImpl().ListShareNodes(apiBasePath + "/" + moduleSharedNodes))
 	// 获取共享组件详情
-	restEndpoint.GET(controller.NewShareNode().GetShareNodeByID(
+	restEndpoint.GET(controller.NewShareNodeHttpImpl().GetShareNodeByID(
 		apiBasePath + "/" + moduleSharedNodes + "/:id" + "/:type"))
 	// 新增/修改共享节点
-	restEndpoint.POST(controller.NewShareNode().UpsertShareNode(apiBasePath + "/" + moduleSharedNodes + "/:type"))
+	restEndpoint.POST(controller.NewShareNodeHttpImpl().UpsertShareNode(apiBasePath + "/" + moduleSharedNodes + "/:type"))
 	// 删除共享节点
 	restEndpoint.DELETE(
-		controller.NewShareNode().DelShareNode(apiBasePath + "/" + moduleSharedNodes + "/:id" + "/:type"))
+		controller.NewShareNodeHttpImpl().DelShareNode(apiBasePath + "/" + moduleSharedNodes + "/:id" + "/:type"))
 
 	/**   共享组件相关路由  **/
 

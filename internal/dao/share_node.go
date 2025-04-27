@@ -112,25 +112,40 @@ func (d *ShareNodeDao) rebuildIndex(indexType string) error {
 			if err = json.Unmarshal(data, &node); err != nil {
 				continue
 			}
-			d.createIndex(node, indexType)
+			d.createNodeIndex(node, indexType)
 		}
 	}
 	return d.saveIndex(d.getIndexPath(indexType))
 }
 
-// Upsert updates or inserts a share node with the given node type and node info.
-func (d *ShareNodeDao) Upsert(nodeType string, nodeInfo []byte) error {
-	var node types.RuleNode
+// UpsertNode updates or inserts a share node with the given node type and node info.
+func (d *ShareNodeDao) UpsertNode(nodeInfo []byte) error {
+	node := types.RuleNode{}
 	if err := json.Unmarshal(nodeInfo, &node); err != nil {
 		return err
 	}
-	if err := d.saveShareNode(nodeType, node, nodeInfo); err != nil {
+	if err := d.saveShareNode(node, nodeInfo); err != nil {
 		return err
 	}
 	// 创建索引
-	d.createIndex(node, nodeType)
+	d.createNodeIndex(node, constants.DirShareNode)
 	// 保存索引到文件
-	return d.saveIndex(d.getIndexPath(nodeType))
+	return d.saveIndex(d.getIndexPath(constants.DirShareNode))
+}
+
+// UpsertEndpoint updates or inserts a share endpoint with the given node type and node info.
+func (d *ShareNodeDao) UpsertEndpoint(nodeInfo []byte) error {
+	node := types.EndpointDsl{}
+	if err := json.Unmarshal(nodeInfo, &node); err != nil {
+		return err
+	}
+	if err := d.saveShareEndpoint(node, nodeInfo); err != nil {
+		return err
+	}
+	// 创建索引
+	d.createEndpointIndex(node, constants.TypeShareEndpoint)
+	// 保存索引到文件
+	return d.saveIndex(d.getIndexPath(constants.TypeShareEndpoint))
 }
 
 // getIndexPath returns the path of the index file.
@@ -140,9 +155,9 @@ func (d *ShareNodeDao) getIndexPath(nodeType string) string {
 }
 
 // saveShareNode saves a share node to a file.
-func (d *ShareNodeDao) saveShareNode(nodeType string, node types.RuleNode, def []byte) error {
+func (d *ShareNodeDao) saveShareNode(node types.RuleNode, def []byte) error {
 	var paths = []string{d.config.DataDir, constants.DirWorkflows}
-	paths = append(paths, d.username, constants.DirWorkflowsShareNodes, nodeType)
+	paths = append(paths, d.username, constants.DirWorkflowsShareNodes, constants.TypeShareNode)
 	pathStr := path.Join(paths...)
 	// 创建文件夹
 	_ = fs.CreateDirs(pathStr)
@@ -156,8 +171,39 @@ func (d *ShareNodeDao) saveShareNode(nodeType string, node types.RuleNode, def [
 	return fs.SaveFile(filepath.Join(pathStr, node.Id+constants.RuleChainFileSuffix), buf.Bytes())
 }
 
-// createIndex creates an index for the share node with the given node type and node info.
-func (d *ShareNodeDao) createIndex(node types.RuleNode, nodeType string) {
+// saveShareEndpoint saves a share endpoint to a file.
+func (d *ShareNodeDao) saveShareEndpoint(node types.EndpointDsl, def []byte) error {
+	var paths = []string{d.config.DataDir, constants.DirWorkflows}
+	paths = append(paths, d.username, constants.DirWorkflowsShareNodes, constants.TypeShareEndpoint)
+	pathStr := path.Join(paths...)
+	// 创建文件夹
+	_ = fs.CreateDirs(pathStr)
+	// 保存到文件
+	var buf bytes.Buffer
+	if err := json.Indent(&buf, def, "", "  "); err != nil {
+		return err
+	}
+
+	// 保存规则链到文件
+	return fs.SaveFile(filepath.Join(pathStr, node.Id+constants.RuleChainFileSuffix), buf.Bytes())
+}
+
+// createNodeIndex creates an index for the share node with the given node type and node info.
+func (d *ShareNodeDao) createNodeIndex(node types.RuleNode, nodeType string) {
+	nodeID := node.Id
+	// 更新索引
+	meta := RuleMeta{
+		Name:       node.Name,
+		ID:         nodeID,
+		UpdateTime: str.ToString(time.Now()),
+	}
+	d.Lock()
+	defer d.Unlock()
+	d.index[nodeType].Rules[nodeID] = meta
+}
+
+// createEndpointIndex creates an index for the share node with the given node type and node info.
+func (d *ShareNodeDao) createEndpointIndex(node types.EndpointDsl, nodeType string) {
 	nodeID := node.Id
 	// 更新索引
 	meta := RuleMeta{
@@ -196,9 +242,9 @@ func (d *ShareNodeDao) GetByID(nodeID string, nodeType string) ([]byte, error) {
 	return os.ReadFile(pathStr)
 }
 
-// Del deletes a share node by ID and node type.
-func (d *ShareNodeDao) Del(nodeID string, nodeType string) error {
-	nodeInfo, err := d.Get(nodeID, nodeType)
+// DelNode deletes a share node by ID.
+func (d *ShareNodeDao) DelNode(nodeID string) error {
+	nodeInfo, err := d.Get(nodeID, constants.TypeShareNode)
 	if err != nil {
 		return err
 	}
@@ -208,14 +254,34 @@ func (d *ShareNodeDao) Del(nodeID string, nodeType string) error {
 
 	var paths = []string{d.config.DataDir, constants.DirWorkflows}
 	paths = append(paths, d.username, constants.DirWorkflowsShareNodes)
-	paths = append(paths, nodeType)
+	paths = append(paths, constants.TypeShareNode)
 	pathStr := path.Join(paths...)
 	file := filepath.Join(pathStr, nodeID+constants.RuleChainFileSuffix)
-	logger.Logger.Printf("444Rebuilding share node from directory:%s\n ", file)
 	if err := os.RemoveAll(file); err != nil {
 		return err
 	}
-	return d.deleteIndex(nodeID, nodeType)
+	return d.deleteIndex(nodeID, constants.TypeShareNode)
+}
+
+// DelEndpoint deletes a share endpoint by ID.
+func (d *ShareNodeDao) DelEndpoint(nodeID string) error {
+	nodeInfo, err := d.Get(nodeID, constants.TypeShareEndpoint)
+	if err != nil {
+		return err
+	}
+
+	node := types.EndpointDsl{}
+	_ = json.Unmarshal(nodeInfo, &node)
+
+	var paths = []string{d.config.DataDir, constants.DirWorkflows}
+	paths = append(paths, d.username, constants.DirWorkflowsShareNodes)
+	paths = append(paths, constants.TypeShareEndpoint)
+	pathStr := path.Join(paths...)
+	file := filepath.Join(pathStr, nodeID+constants.RuleChainFileSuffix)
+	if err := os.RemoveAll(file); err != nil {
+		return err
+	}
+	return d.deleteIndex(nodeID, constants.TypeShareEndpoint)
 }
 
 // deleteIndex deletes an index by ID and node type.
@@ -226,8 +292,8 @@ func (d *ShareNodeDao) deleteIndex(nodeID string, nodeType string) error {
 	return d.saveIndex(d.getIndexPath(nodeType))
 }
 
-// List lists share nodes.
-func (d *ShareNodeDao) List(keywords string, page int, size int, nodeType string) ([]types.RuleNode, int, error) {
+// ListNode lists share nodes.
+func (d *ShareNodeDao) ListNode(keywords string, page int, size int, nodeType string) ([]types.RuleNode, int, error) {
 	var nodes []types.RuleNode
 	totalCount := 0
 	indexList := d.getAllIndex(nodeType)
@@ -237,6 +303,42 @@ func (d *ShareNodeDao) List(keywords string, page int, size int, nodeType string
 		meta := indexList[idx]
 		if keywords == "" || strings.Contains(meta.Name, keywords) || strings.Contains(meta.ID, keywords) {
 			oneNode, err := d.GetAsShareNode(meta.ID, nodeType)
+			if err != nil {
+				continue
+			}
+			nodes = append(nodes, oneNode)
+			totalCount++
+		}
+
+	}
+
+	if page == 0 {
+		return nodes, totalCount, nil
+	}
+
+	start := (page - 1) * size
+	end := start + size
+	if start > totalCount {
+		start = totalCount
+	}
+	if end > totalCount {
+		end = totalCount
+	}
+
+	return nodes[start:end], totalCount, nil
+}
+
+// ListEndpoint lists share endpoints.
+func (d *ShareNodeDao) ListEndpoint(keywords string, page int, size int, nodeType string) ([]types.EndpointDsl, int, error) {
+	var nodes []types.EndpointDsl
+	totalCount := 0
+	indexList := d.getAllIndex(nodeType)
+
+	// 遍历索引中的元数据
+	for idx := range indexList {
+		meta := indexList[idx]
+		if keywords == "" || strings.Contains(meta.Name, keywords) || strings.Contains(meta.ID, keywords) {
+			oneNode, err := d.GetAsShareEndpoint(meta.ID, nodeType)
 			if err != nil {
 				continue
 			}
@@ -276,6 +378,20 @@ func (d *ShareNodeDao) getAllIndex(nodeType string) []RuleMeta {
 // GetAsShareNode gets a share node by ID and returns it as a RuleNode.
 func (d *ShareNodeDao) GetAsShareNode(nodeID string, nodeType string) (types.RuleNode, error) {
 	var node types.RuleNode
+	data, err := d.Get(nodeID, nodeType)
+	if err != nil {
+		return node, err
+	}
+	if err = json.Unmarshal(data, &node); err != nil {
+		return node, err
+	}
+
+	return node, nil
+}
+
+// GetAsShareEndpoint gets a share endpoint by ID and returns it as a EndpointDsl.
+func (d *ShareNodeDao) GetAsShareEndpoint(nodeID string, nodeType string) (types.EndpointDsl, error) {
+	var node types.EndpointDsl
 	data, err := d.Get(nodeID, nodeType)
 	if err != nil {
 		return node, err

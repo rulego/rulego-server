@@ -102,9 +102,9 @@ func (s *McpService) LoadTools() {
 		if s.config.MCP.LoadComponentsAsTool {
 			s.LoadToolsFromComponents()
 		}
-		//if s.config.MCP.LoadChainsAsTool {//已经从Callbacks.OnNew 加载
+		// if s.config.MCP.LoadChainsAsTool {//已经从Callbacks.OnNew 加载
 		//	s.LoadToolsFromChains()
-		//}
+		// }
 		if s.config.MCP.LoadApisAsTool {
 			s.AddRuleApiTools()
 		}
@@ -253,7 +253,7 @@ func (s *McpService) AddToolsFromChain(id string, def types.RuleChain) {
 				tool = mcp.NewToolWithRawSchema(id, desc, schema)
 			}
 		} else {
-			//自动从所有节点中获取所有变量
+			// 自动从所有节点中获取所有变量
 			vars := dsl.ParseVars(types.MsgKey, def)
 			if len(vars) > 0 {
 				var toolOptions []mcp.ToolOption
@@ -323,7 +323,7 @@ func (s *McpService) AddRuleApiTools() {
 // AddListRuleTool 添加列出规则链工具
 func (s *McpService) AddListRuleTool() {
 	tool := mcp.NewTool(ToolNameListRuleChain,
-		mcp.WithDescription("List RuleGo rule chain"),
+		mcp.WithDescription("ListNode RuleGo rule chain"),
 		mcp.WithString(constants.KeyKeywords, mcp.Description("Keywords for filtering rule chains")),
 		mcp.WithBoolean(constants.KeyRoot, mcp.Description("Indicates whether the rule chain is a root rule chain")),
 		mcp.WithBoolean(constants.KeyDisabled, mcp.Description("Indicates whether the rule chain is disabled")),

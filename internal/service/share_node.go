@@ -69,7 +69,10 @@ func (s *ShareNodeService) Init() error {
 
 // Upsert updates or inserts a share node with the given node type and node info.
 func (s *ShareNodeService) Upsert(nodeType string, nodeInfo []byte) error {
-	return s.shareNodeDao.Upsert(nodeType, nodeInfo)
+	if nodeType == constants.TypeShareNode {
+		return s.shareNodeDao.UpsertNode(nodeInfo)
+	}
+	return s.shareNodeDao.UpsertEndpoint(nodeInfo)
 }
 
 // GetByID returns the share node with the given ID and node type.
@@ -79,10 +82,18 @@ func (s *ShareNodeService) GetByID(nodeID string, nodeType string) ([]byte, erro
 
 // Del deletes the share node with the given ID and node type.
 func (s *ShareNodeService) Del(nodeID string, nodeType string) error {
-	return s.shareNodeDao.Del(nodeID, nodeType)
+	if nodeType == constants.TypeShareNode {
+		return s.shareNodeDao.DelNode(nodeID)
+	}
+	return s.shareNodeDao.DelEndpoint(nodeID)
 }
 
-// List returns a list of share nodes with the given keywords and pagination information.
-func (s *ShareNodeService) List(keywords string, page int, size int, nodeType string) ([]types.RuleNode, int, error) {
-	return s.shareNodeDao.List(keywords, page, size, nodeType)
+// ListNode returns a list of share nodes with the given keywords and pagination information.
+func (s *ShareNodeService) ListNode(keywords string, page int, size int) ([]types.RuleNode, int, error) {
+	return s.shareNodeDao.ListNode(keywords, page, size, constants.TypeShareNode)
+}
+
+// ListEndpoint returns a list of share nodes with the given keywords and pagination information.
+func (s *ShareNodeService) ListEndpoint(keywords string, page int, size int) ([]types.EndpointDsl, int, error) {
+	return s.shareNodeDao.ListEndpoint(keywords, page, size, constants.TypeShareEndpoint)
 }
