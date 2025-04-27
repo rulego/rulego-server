@@ -33,11 +33,11 @@ type Config struct {
 	Server string `ini:"server"`
 	// DefaultUsername 你们访问时候，默认用户名
 	DefaultUsername string `ini:"default_username"`
-	//是否把节点调试日志打印到日志文件
+	// 是否把节点调试日志打印到日志文件
 	Debug bool `ini:"debug"`
-	//最大节点日志大小，默认40
+	// 最大节点日志大小，默认40
 	MaxNodeLogSize int `ini:"max_node_log_size"`
-	//静态文件路径映射，例如:/ui/*filepath=/home/demo/dist,/images/*filepath=/home/demo/dist/images
+	// 静态文件路径映射，例如:/ui/*filepath=/home/demo/dist,/images/*filepath=/home/demo/dist/images
 	ResourceMapping string `ini:"resource_mapping"`
 	// 全局自定义配置，组件可以通过${global.xxx}方式取值
 	Global types.Metadata `ini:"global"`
@@ -54,7 +54,7 @@ type Config struct {
 	// EventBusChainId 核心规则链Id
 	EventBusChainId string `ini:"event_bus_chain_id"`
 
-	//RequireAuth api访问是否需要验证，默认不需要
+	// RequireAuth api访问是否需要验证，默认不需要
 	RequireAuth bool `ini:"require_auth"`
 	// JwtSecretKey jwt密钥
 	JwtSecretKey string `ini:"jwt_secret_key"`
@@ -70,9 +70,9 @@ type Config struct {
 	MarketplaceBaseUrl string `ini:"marketplace_base_url"`
 	// MCP配置
 	MCP MCP `ini:"mcp"`
-	//用户名和密码映射
+	// 用户名和密码映射
 	UserNamePasswordMap types.Metadata `ini:"-"`
-	//API key和用户名映射
+	// API key和用户名映射
 	ApiKeyUserNameMap types.Metadata `ini:"-"`
 }
 type Pprof struct {
@@ -143,15 +143,15 @@ func (c *Config) GetApiKeyByUsername(username string) string {
 // DefaultConfig 默认配置
 var DefaultConfig = Config{
 	DataDir: "./data",
-	//LogFile:      "./rulego.log",
+	// LogFile:      "./rulego.log",
 	CmdWhiteList:       "cp,scp,mvn,npm,yarn,git,make,cmake,docker,kubectl,helm,ansible,puppet,pytest,python,python3,pip,go,java,dotnet,gcc,g++,ctest",
 	LoadLuaLibs:        "true",
-	Server:             ":9090",
+	Server:             ":9091",
 	DefaultUsername:    "admin",
 	MaxNodeLogSize:     40,
 	ResourceMapping:    "/editor/*filepath=./editor,/images/*filepath=./editor/images",
 	JwtSecretKey:       "r6G7qZ8xk9P0y1Q2w3E4r5T6y7U8i9O0pL7z8x9CvBnM3k2l1",
-	JwtExpireTime:      43200000, //12小时
+	JwtExpireTime:      43200000, // 12小时
 	JwtIssuer:          "rulego.cc",
 	MarketplaceBaseUrl: "http://8.134.32.225:9090/api/v1",
 	Users: types.Metadata{

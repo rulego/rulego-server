@@ -32,7 +32,7 @@ const (
 
 // NewRestServe rest服务 接收端点
 func NewRestServe(config config.Config) *rest.Endpoint {
-	//初始化日志
+	// 初始化日志
 	addr := config.Server
 	if strings.HasPrefix(addr, ":") {
 		logger.Logger.Println("RuleGo-Server now running at http://127.0.0.1" + addr)
@@ -47,12 +47,12 @@ func NewRestServe(config config.Config) *rest.Endpoint {
 		},
 		RuleConfig: rulego.NewConfig(types.WithDefaultPool(), types.WithLogger(logger.Logger)),
 	}
-	//添加全局拦截器
+	// 添加全局拦截器
 	restEndpoint.AddInterceptors(func(router endpointApi.Router, exchange *endpointApi.Exchange) bool {
 		exchange.Out.Headers().Set(ContentTypeKey, JsonContextType)
 		return true
 	})
-	//重定向UI界面
+	// 重定向UI界面
 	restEndpoint.GET(endpoint.NewRouter().From("/").Process(func(router endpointApi.Router, exchange *endpointApi.Exchange) bool {
 		r, ok1 := exchange.In.(*rest.RequestMessage)
 		w, ok2 := exchange.Out.(*rest.ResponseMessage)
@@ -61,57 +61,69 @@ func NewRestServe(config config.Config) *rest.Endpoint {
 		}
 		return false
 	}).End())
-	//创建获取所有规则引擎组件列表路由
+
+	/**   共享组件相关路由  **/
+
+	// 获取共享组件列表
+	restEndpoint.GET(controller.NewShareNodeHttpImpl().ListShareNodes(apiBasePath + "/" + moduleSharedNodes))
+	// 获取共享组件详情
+	restEndpoint.GET(controller.NewShareNodeHttpImpl().GetShareNodeByID(
+		apiBasePath + "/" + moduleSharedNodes + "/:id" + "/:type"))
+	// 新增/修改共享节点
+	restEndpoint.POST(controller.NewShareNodeHttpImpl().UpsertShareNode(apiBasePath + "/" + moduleSharedNodes + "/:type"))
+	// 删除共享节点
+	restEndpoint.DELETE(
+		controller.NewShareNodeHttpImpl().DelShareNode(apiBasePath + "/" + moduleSharedNodes + "/:id" + "/:type"))
+
+	/**   共享组件相关路由  **/
+
+	// 创建获取所有规则引擎组件列表路由
 	restEndpoint.GET(controller.Node.Components(apiBasePath + "/components"))
-
-	//获取所有共享组件
-	restEndpoint.GET(controller.Node.ListNodePool(apiBasePath + "/" + moduleSharedNodes))
-
-	//获取组件市场组件列表
+	// 获取组件市场组件列表
 	restEndpoint.GET(controller.Node.MarketplaceComponents(apiBasePath + "/" + moduleMarketplace + "/components"))
-	//获取组件市场规则链列表
+	// 获取组件市场规则链列表
 	restEndpoint.GET(controller.Rule.MarketplaceChains(apiBasePath + "/" + moduleMarketplace + "/chains"))
 
-	//获取用户所有自定义动态组件列表
+	// 获取用户所有自定义动态组件列表
 	restEndpoint.GET(controller.Node.CustomNodeList(apiBasePath + "/" + moduleDynamicComponents))
-	//获取自定义动态组件DSL
+	// 获取自定义动态组件DSL
 	restEndpoint.GET(controller.Node.CustomNodeDSL(apiBasePath + "/" + moduleDynamicComponents + "/:id"))
-	//安装/升级自定义动态组件
+	// 安装/升级自定义动态组件
 	restEndpoint.POST(controller.Node.CustomNodeUpgrade(apiBasePath + "/" + moduleDynamicComponents + "/:id"))
-	//卸装自定义动态组件
+	// 卸装自定义动态组件
 	restEndpoint.DELETE(controller.Node.CustomNodeUninstall(apiBasePath + "/" + moduleDynamicComponents + "/:id"))
 
-	//获取所有规则链列表
+	// 获取所有规则链列表
 	restEndpoint.GET(controller.Rule.List(apiBasePath + "/" + moduleFlows))
-	//获取最新修改的规则链DSL 实际是：/api/v1/rules/get/latest
+	// 获取最新修改的规则链DSL 实际是：/api/v1/rules/get/latest
 	restEndpoint.GET(controller.Rule.GetLatest(apiBasePath + "/" + moduleFlows + "/:id/latest"))
-	//获取规则链DSL
+	// 获取规则链DSL
 	restEndpoint.GET(controller.Rule.Get(apiBasePath + "/" + moduleFlows + "/:id"))
-	//新增/修改规则链DSL
+	// 新增/修改规则链DSL
 	restEndpoint.POST(controller.Rule.Save(apiBasePath + "/" + moduleFlows + "/:id"))
-	//删除规则链
+	// 删除规则链
 	restEndpoint.DELETE(controller.Rule.Delete(apiBasePath + "/" + moduleFlows + "/:id"))
-	//保存规则链附加信息
+	// 保存规则链附加信息
 	restEndpoint.POST(controller.Rule.SaveBaseInfo(apiBasePath + "/" + moduleFlows + "/:id/base"))
-	//保存规则链配置信息
+	// 保存规则链配置信息
 	restEndpoint.POST(controller.Rule.SaveConfiguration(apiBasePath + "/" + moduleFlows + "/:id/config/:varType"))
-	//执行规则链,并得到规则链处理结果
+	// 执行规则链,并得到规则链处理结果
 	restEndpoint.POST(controller.Rule.Execute(apiBasePath + "/" + moduleFlows + "/:id/execute/:msgType"))
-	//处理数据上报请求，并转发到规则引擎，不等待规则引擎处理结果
+	// 处理数据上报请求，并转发到规则引擎，不等待规则引擎处理结果
 	restEndpoint.POST(controller.Rule.PostMsg(apiBasePath + "/" + moduleFlows + "/:id/notify/:msgType"))
-	//部署或者下线规则链
+	// 部署或者下线规则链
 	restEndpoint.POST(controller.Rule.Operate(apiBasePath + "/" + moduleFlows + "/:id/operate/:type"))
 
-	//获取节点调试日志列表
+	// 获取节点调试日志列表
 	restEndpoint.GET(controller.Log.GetDebugLogs(apiBasePath + "/" + moduleLogs + "/debug"))
-	//获取规则链运行日志列表
+	// 获取规则链运行日志列表
 	restEndpoint.GET(controller.Log.List(apiBasePath + "/" + moduleLogs + "/runs"))
-	//获取规则链运行日志详情
+	// 获取规则链运行日志详情
 	restEndpoint.DELETE(controller.Log.Delete(apiBasePath + "/" + moduleLogs + "/runs"))
 
 	restEndpoint.GET(controller.Locale.Locales(apiBasePath + "/" + moduleLocales))
 	restEndpoint.POST(controller.Locale.Save(apiBasePath + "/" + moduleLocales))
-	//创建用户登录路由
+	// 创建用户登录路由
 	restEndpoint.POST(controller.Base.Login(apiBasePath + "/login"))
 
 	if config.MCP.Enable {
@@ -121,7 +133,7 @@ func NewRestServe(config config.Config) *rest.Endpoint {
 			service.UserServiceImpl.GetApiKeyByUsername(config.DefaultUsername) + "/sse")
 	}
 
-	//静态文件映射
+	// 静态文件映射
 	loadServeFiles(config, restEndpoint)
 	return restEndpoint
 }
