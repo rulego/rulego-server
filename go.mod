@@ -1,16 +1,17 @@
 module github.com/rulego/rulego-server
 
-go 1.23
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
 	github.com/dop251/goja v0.0.0-20231024180952-594410467bc6
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/websocket v1.5.0
-	github.com/mark3labs/mcp-go v0.17.0
-	github.com/rulego/rulego v0.30.0-alpha.1
+	github.com/mark3labs/mcp-go v0.18.0
+	github.com/rulego/rulego v0.30.1-0.20250429035125-23a9a933b36a
 	github.com/rulego/rulego-components v0.29.1
-	github.com/rulego/rulego-components-ai v0.29.0
+	github.com/rulego/rulego-components-ai v0.29.1-0.20250429035651-489af3d5d273
 	github.com/rulego/rulego-components-ci v0.29.0
 	github.com/rulego/rulego-components-etl v0.29.0
 	github.com/rulego/rulego-components-iot v0.29.0
@@ -52,7 +53,7 @@ require (
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/envoyproxy/go-control-plane v0.13.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.1.0 // indirect
-	github.com/expr-lang/expr v1.16.9 // indirect
+	github.com/expr-lang/expr v1.17.2 // indirect
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/fullstorydev/grpcurl v1.9.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
