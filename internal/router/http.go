@@ -10,6 +10,7 @@ import (
 	endpointApi "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/endpoint"
 	"github.com/rulego/rulego/endpoint/rest"
+	"github.com/rulego/rulego/node_pool"
 	"net/http"
 	"strings"
 )
@@ -135,6 +136,12 @@ func NewRestServe(config config.Config) *rest.Endpoint {
 
 	// 静态文件映射
 	loadServeFiles(config, restEndpoint)
+
+	//把默认HTTP服务设置成共享节点
+	if config.ShareHttpServer {
+		_, _ = node_pool.DefaultNodePool.AddNode(restEndpoint)
+	}
+
 	return restEndpoint
 }
 

@@ -68,6 +68,8 @@ type Config struct {
 	Pprof Pprof `ini:"pprof"`
 	// 组件市场根地址
 	MarketplaceBaseUrl string `ini:"marketplace_base_url"`
+	// 是否默认HTTP服务设置成共享节点
+	ShareHttpServer bool `ini:"share_http_server"`
 	// MCP配置
 	MCP MCP `ini:"mcp"`
 	// 用户名和密码映射
@@ -154,6 +156,7 @@ var DefaultConfig = Config{
 	JwtExpireTime:      43200000, // 12小时
 	JwtIssuer:          "rulego.cc",
 	MarketplaceBaseUrl: "http://8.134.32.225:9090/api/v1",
+	ShareHttpServer:    true,
 	Users: types.Metadata{
 		"admin": "admin,2af255ea5618467d914c67a8beeca31d",
 	},
