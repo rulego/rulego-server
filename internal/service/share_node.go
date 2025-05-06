@@ -9,7 +9,10 @@ import (
 	"github.com/rulego/rulego-server/internal/dao"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/utils/fs"
+	"github.com/rulego/rulego/utils/json"
+	"os"
 	"path"
+	"strings"
 )
 
 // ShareNodeService represents the service for managing share nodes.
@@ -64,6 +67,68 @@ func (s *ShareNodeService) Init() error {
 		}
 	}
 
+	return nil
+}
+
+// Load loads user's all share nodes from the data directory.
+func (s *ShareNodeService) Load(ruleConfig *types.Config) error {
+	dirs := constants.GetShareNodesDir()
+	for idx := range dirs {
+		oneShareNode := dirs[idx]
+		folderPath := path.Join(s.config.DataDir,
+			constants.DirWorkflows, s.username, constants.DirWorkflowsShareNodes, oneShareNode)
+		entries, err := os.ReadDir(folderPath)
+		if err != nil {
+			return err
+		}
+
+		var names []string
+		for index := range entries {
+			entry := entries[index]
+			if entry.IsDir() {
+				continue
+			}
+
+			fileName := entry.Name()
+			// 或使用 filepath.Ext(fileName) == ".json"
+			if strings.HasSuffix(fileName, ".json") {
+				names = append(names, fileName)
+			}
+		}
+
+		if len(names) == 0 {
+			continue
+		}
+
+		for index := range names {
+			filePath := path.Join(folderPath, names[index])
+			content := fs.LoadFile(filePath)
+			if content == nil {
+				continue
+			}
+
+			switch oneShareNode {
+			case constants.TypeShareNode:
+				shareNode := types.RuleNode{}
+				if err = json.Unmarshal(content, &shareNode); err != nil {
+					return err
+				}
+				if _, err = ruleConfig.NetPool.NewFromRuleNode(shareNode); err != nil {
+					return err
+				}
+			case constants.TypeShareEndpoint:
+				endpoint := types.EndpointDsl{}
+				if err = json.Unmarshal(content, &endpoint); err != nil {
+					return err
+				}
+
+				if _, err = ruleConfig.NetPool.NewFromEndpoint(endpoint); err != nil {
+					return err
+				}
+			default:
+			}
+		}
+	}
 	return nil
 }
 
