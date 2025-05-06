@@ -508,6 +508,12 @@ func (s *RuleEngineService) InitRuleGo(logger *log.Logger, workspacePath string,
 	for k, v := range s.config.Global {
 		ruleConfig.Properties.PutValue(k, v)
 	}
+
+	// 加载共享组件
+	if err := s.ShareNodeService().Load(&ruleConfig); err != nil {
+		s.logger.Printf("load share node error: %+v", err)
+	}
+
 	// 加载lua第三方库
 	ruleConfig.Properties.PutValue(constants.LoadLuaLibs, s.config.LoadLuaLibs)
 	ruleConfig.Properties.PutValue(action.KeyExecNodeWhitelist, s.config.CmdWhiteList)
@@ -551,14 +557,14 @@ func (s *RuleEngineService) InitRuleGo(logger *log.Logger, workspacePath string,
 	jsPath := path.Join(workspacePath, "js")
 	err := s.loadJs(jsPath)
 	if err != nil {
-		s.logger.Printf("parser js file error:", err)
+		s.logger.Printf("parser js file error:%+v", err)
 	}
 
 	// 加载组件插件
 	pluginsPath := path.Join(workspacePath, "plugins")
 	err = s.loadPlugins(pluginsPath)
 	if err != nil {
-		s.logger.Printf("parser plugin file error:", err)
+		s.logger.Printf("parser plugin file error:%+v", err)
 	}
 
 	// 加载规则链
