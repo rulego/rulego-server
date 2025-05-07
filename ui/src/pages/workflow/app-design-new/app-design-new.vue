@@ -7,7 +7,7 @@ import { cloneDeep, } from 'lodash-es';
 import EventBus from '@src/utils/event-bus';
 import ChatListView from "@src/pages/workflow/chat-list-view/chat-list-view.vue";
 import ToolButtons from '@src/pages/workflow/app-design-new/tool-buttons.vue';
-import Assistant from '@src/assets/assistant.svg';
+//import Assistant from '@src/assets/assistant.svg';
 import AiChatDrawer from '@src/pages/workflow/chat-list-view/ai-chat-drawer.vue';
 
 const props = defineProps({
@@ -106,11 +106,12 @@ defineExpose({
       <chat-list-view class="flex-1" />
     </div>
     <tool-buttons v-model="toolButtons" class="absolute top-4 right-4" />
-    <div @click="isAiVisible = true" class="absolute bottom-24 right-10 size-[50px] flex justify-center items-center rounded-full bg-white cursor-pointer border">
+    <!--20250507暂时注释掉ai助手-->
+    <!-- <div @click="isAiVisible = true" class="absolute bottom-24 right-10 size-[50px] flex justify-center items-center rounded-full bg-white cursor-pointer border">
       <el-icon :size="28">
         <Assistant />
       </el-icon>
-    </div>
+    </div> -->
     <ai-chat-drawer v-model="isAiVisible" />
   </div>
 </template>
