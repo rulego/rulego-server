@@ -1,0 +1,27 @@
+# 第一阶段: 构建前端
+FROM node:20.11.1-alpine AS builder
+WORKDIR /app/frontend
+COPY ui/package*.json ./
+RUN npm install
+COPY ui/ .
+# 定义要修改的文件路径
+# 使用 sed 命令替换 IP 地址和端口
+RUN sed -i 's/8.134.32.225:9090/127.0.0.1:9099/g' "public/config.js"
+
+
+RUN npm run build
+
+# 第二阶段：使用 Nginx 托管静态文件
+FROM nginx:latest
+
+# 删除默认的 Nginx 配置文件
+RUN rm -rf /usr/share/nginx/html/*
+
+# 将前端构建结果复制到 Nginx 的默认目录
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+
+# 暴露端口
+EXPOSE 80
+
+# 启动 Nginx
+CMD ["nginx", "-g", "daemon off;"]
