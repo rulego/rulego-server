@@ -1,0 +1,40 @@
+version: "3"
+services:
+  # editor:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.editor
+  #   container_name: editor
+  #   ports:
+  #     - "9997:80"
+  #   restart: always
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: frontend
+    ports:
+      - "9998:80"
+    restart: always
+  workflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workflow
+    ports:
+      - "9099:9091"
+    volumes:
+      - ./volumes/rulego_data:/app/data
+      - ./volumes/rulego_logs:/app/logs
+    environment:
+      - RULESERVER=:9091
+      - RULEMCP_LOAD_COMPONENTS_AS_TOOL=false
+      - RULEDEBUG=true
+      - RULELOG_FILE=./logs/rulego.log
+      - RULESAVE_RUN_LOG=true
+    restart: always
+networks:
+  rulego:
+    ipam:
+      config:
+        - subnet: 192.100.0.0/16

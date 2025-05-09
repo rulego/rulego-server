@@ -19,17 +19,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rulego/rulego-server/config"
-	"github.com/rulego/rulego-server/config/logger"
-	"github.com/rulego/rulego-server/internal/router"
-	"github.com/rulego/rulego-server/internal/service"
-	"gopkg.in/ini.v1"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/rulego/rulego-server/config"
+	"github.com/rulego/rulego-server/config/logger"
+	"github.com/rulego/rulego-server/internal/router"
+	"github.com/rulego/rulego-server/internal/service"
+	"gopkg.in/ini.v1"
 
 	endpointApi "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/endpoint/rest"
@@ -60,22 +61,31 @@ func main() {
 		os.Exit(0)
 	}
 
-	var c config.Config
-	if configFile == "" {
-		c = config.DefaultConfig
-	} else if cfg, err := ini.Load(configFile); err != nil {
-		log.Fatal("error:", err)
-	} else {
-		if err := cfg.MapTo(&c); err != nil {
+	// 首先设置默认配置
+	c := config.DefaultConfig
+
+	// 如果指定了配置文件，则从配置文件加载配置（环境变量未设置的项）
+	if configFile != "" {
+		if cfg, err := ini.Load(configFile); err != nil {
 			log.Fatal("error:", err)
-		}
-		if section, err := cfg.GetSection("global"); err == nil {
-			c.Global = section.KeysHash()
-		}
-		if section, err := cfg.GetSection("users"); err == nil {
-			c.Users = section.KeysHash()
+		} else {
+			// 从配置文件加载配置，但保留环境变量已设置的值
+			if err := cfg.MapTo(&c); err != nil {
+				log.Fatal("error:", err)
+			}
+			// 加载全局配置
+			if section, err := cfg.GetSection("global"); err == nil {
+				c.Global = section.KeysHash()
+			}
+			// 加载用户配置
+			if section, err := cfg.GetSection("users"); err == nil {
+				c.Users = section.KeysHash()
+			}
 		}
 	}
+	// 优先从环境变量加载配置
+	c.LoadFromEnv()
+
 	config.Set(c)
 	logger.Set(initLogger(c))
 
