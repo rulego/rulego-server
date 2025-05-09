@@ -27,11 +27,11 @@ services:
       - ./volumes/rulego_data:/app/data
       - ./volumes/rulego_logs:/app/logs
     environment:
-      - RULESERVER=:9091
-      - RULEMCP_LOAD_COMPONENTS_AS_TOOL=false
-      - RULEDEBUG=true
-      - RULELOG_FILE=./logs/rulego.log
-      - RULESAVE_RUN_LOG=true
+      - RULEGO_SERVER=:9091
+      - RULEGO_MCP_LOAD_COMPONENTS_AS_TOOL=false
+      - RULEGO_DEBUG=true
+      - RULEGO_LOG_FILE=./logs/rulego.log
+      - RULEGO_SAVE_RUN_LOG=true
     restart: always
 networks:
   rulego:
