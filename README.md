@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/rulego-rulego-server-badge.png)](https://mseep.ai/app/rulego-rulego-server)
+
 # server
 
 English | [简体中文](README_ZH.md)
