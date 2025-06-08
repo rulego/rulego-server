@@ -284,7 +284,7 @@ var DefaultConfig = Config{
 	// LogFile:      "./rulego.log",
 	CmdWhiteList:       "cp,scp,mvn,npm,yarn,git,make,cmake,docker,kubectl,helm,ansible,puppet,pytest,python,python3,pip,go,java,dotnet,gcc,g++,ctest",
 	LoadLuaLibs:        "true",
-	Server:             ":9091",
+	Server:             ":9090",
 	DefaultUsername:    "admin",
 	MaxNodeLogSize:     40,
 	ResourceMapping:    "/editor/*filepath=./editor,/images/*filepath=./editor/images",

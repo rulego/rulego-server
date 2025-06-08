@@ -33,7 +33,6 @@ import (
 	"gopkg.in/ini.v1"
 
 	endpointApi "github.com/rulego/rulego/api/types/endpoint"
-	"github.com/rulego/rulego/endpoint/rest"
 	"github.com/rulego/rulego/node_pool"
 )
 
@@ -109,34 +108,30 @@ func main() {
 		log.Printf("loadNodePool file=%s \n", c.NodePoolFile)
 	}
 
+	//初始化rulego配置
+	router.InitRulegoConfig()
+	//创建http服务
+	ep, err := router.NewRestServe(c)
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	//启动http服务
+	if err := ep.Start(); err != nil {
+		log.Fatal("error:", err)
+	}
+	//创建websocket服务
+	if restEp, ok := ep.(endpointApi.HttpEndpoint); ok {
+		wsEp, err := router.NewWebsocketServe(c, restEp)
+		if err != nil {
+			log.Fatal("websocket endpoint creation error:", err)
+		}
+		if err := wsEp.Start(); err != nil {
+			log.Fatal("websocket start error:", err)
+		}
+	}
 	//初始化服务
 	if err := service.Setup(c); err != nil {
 		log.Fatal("setup service error:", err)
-	}
-	/////初始化核心引擎服务
-	//if err := service.InitCoreEngineService(c); err != nil {
-	//	log.Fatal("init core engine server error:", err)
-	//}
-	//var mqttEndpoint endpointApi.Endpoint
-	////创建mqtt接入服务
-	//if c.Mqtt.Enabled {
-	//	mqttEndpoint, _ = router.MqttServe(c, logger.Logger)
-	//}
-	//创建rest服务
-	restEndpoint := router.NewRestServe(c)
-	restEndpoint.OnEvent = func(eventName string, params ...interface{}) {
-		if eventName == endpointApi.EventInitServer {
-			//加载静态文件
-			router.LoadServeFiles(c, restEndpoint)
-			wsEndpoint := router.NewWebsocketServe(c, params[0].(*rest.Rest))
-			if err := wsEndpoint.Start(); err != nil {
-				log.Fatal("error:", err)
-			}
-		}
-	}
-	//启动服务
-	if err := restEndpoint.Start(); err != nil {
-		log.Fatal("error:", err)
 	}
 
 	sigs := make(chan os.Signal, 1)
@@ -145,12 +140,9 @@ func main() {
 
 	select {
 	case <-sigs:
-		if restEndpoint != nil {
-			restEndpoint.Destroy()
+		if ep != nil {
+			ep.Destroy()
 		}
-		//if mqttEndpoint != nil {
-		//	mqttEndpoint.Destroy()
-		//}
 		log.Println("stopped server")
 		os.Exit(0)
 	}
