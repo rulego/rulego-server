@@ -7,7 +7,6 @@ toolchain go1.24.1
 require (
 	github.com/dop251/goja v0.0.0-20231024180952-594410467bc6
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/gorilla/websocket v1.5.0
 	github.com/mark3labs/mcp-go v0.18.0
 	github.com/rulego/rulego v0.31.2-0.20250608125024-ce39f3a58adb
 	github.com/rulego/rulego-components v0.31.1-0.20250608130500-2caa539f0751
@@ -30,6 +29,7 @@ require (
 	github.com/WuKongIM/WuKongIMGoProto v1.0.8 // indirect
 	github.com/WuKongIM/WuKongIMGoSDK v1.0.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
+	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/aws/aws-sdk-go v1.34.0 // indirect
 	github.com/beanstalkd/go-beanstalk v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -54,6 +54,8 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/expr-lang/expr v1.17.2 // indirect
+	github.com/fasthttp/router v1.5.3 // indirect
+	github.com/fasthttp/websocket v1.5.12 // indirect
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/fullstorydev/grpcurl v1.9.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
@@ -75,6 +77,7 @@ require (
 	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gopcua/opcua v0.6.1 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -124,6 +127,7 @@ require (
 	github.com/redis/go-redis/v9 v9.10.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/sashabaranov/go-openai v1.37.0 // indirect
+	github.com/savsgio/gotils v0.0.0-20240704082632-aef3928b8a38 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.5-0.20250517063057-34ac457e154c // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
@@ -137,6 +141,7 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/vadv/gopher-lua-libs v0.5.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasthttp v1.58.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
