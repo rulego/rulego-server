@@ -93,6 +93,7 @@ Other extension component library tags:
 - Register the CI/CD extension component [rulego-components-ci](https://github.com/rulego/rulego-components-ci) using the `with_ci` tag for compilation
 - Register the IoT extension component [rulego-components-iot](https://github.com/rulego/rulego-components-iot) using the `with_iot` tag for compilation
 - Register the ETL extension component [rulego-components-etl](https://github.com/rulego/rulego-components-etl) using the `with_etl` tag for compilation
+- Replace the standard `endpoint/http` and `restApiCall` components with `fasthttp`, and compile with the `use_fasthttp` tag.
 
 If you need to include multiple extension component libraries at the same time, you can compile with the `go build -tags "with_extend,with_ai,with_ci,with_iot,with_etl"` tag.
 
