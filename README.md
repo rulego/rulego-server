@@ -1,6 +1,6 @@
-[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/1dab5ea4-ee7a-4679-86a0-88f83011392b)
+# RuleGo-Server
 
-# server
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/1dab5ea4-ee7a-4679-86a0-88f83011392b)
 
 English | [简体中文](README_ZH.md)
 
