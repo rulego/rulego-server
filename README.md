@@ -1,4 +1,4 @@
-[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/rulego-rulego-server-badge.png)](https://mseep.ai/app/rulego-rulego-server)
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/1dab5ea4-ee7a-4679-86a0-88f83011392b)
 
 # server
 
