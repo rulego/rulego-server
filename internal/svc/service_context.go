@@ -2,16 +2,13 @@ package svc
 
 import (
 	"github.com/rulego/rulego-server/config"
-	"github.com/rulego/rulego-server/internal/core"
 	"github.com/rulego/rulego-server/internal/service"
 )
 
 type ServiceContext struct {
 	Config config.Config
 
-	// new service
-	AppManager *core.UserAppManager
-
+	AppMgr *service.AppManager
 	// services
 	UserSvc     *service.UserService
 	UserRuleSvc *service.UserRuleEngineService
@@ -52,6 +49,12 @@ func GetServiceContext() *ServiceContext {
 }
 
 func (ctx *ServiceContext) setup() error {
+
+	appMgr, err := service.NewAppManager()
+	if err != nil {
+		return err
+	}
+	ctx.AppMgr = appMgr
 
 	userSvc, err := service.NewUserService(ctx.Config)
 	if err != nil {

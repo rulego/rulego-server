@@ -16,15 +16,16 @@ type AppManager struct {
 }
 type userFilter func(username string, ag *AppGroup) bool
 
-func NewAppManager() *AppManager {
+func NewAppManager() (*AppManager, error) {
 	fs, err := dao.NewFileStorage("")
 	if err != nil {
 		// logger
+		return nil, err
 	}
 
 	return &AppManager{
 		fs: fs,
-	}
+	}, nil
 }
 
 // 目前先通过calc实现用户相关的AppGroup检索； 后续若AppGroup太多了，再依用户维护维护关系表，实现更高效的检索
