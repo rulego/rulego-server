@@ -1,23 +1,26 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/rulego/rulego-server/config"
 	"github.com/rulego/rulego-server/config/logger"
 	"github.com/rulego/rulego-server/internal/constants"
 	"github.com/rulego/rulego-server/internal/service"
+	"github.com/rulego/rulego-server/internal/svc"
 	"github.com/rulego/rulego/api/types"
 	endpointApi "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/endpoint"
 	"github.com/rulego/rulego/utils/json"
 	"github.com/rulego/rulego/utils/str"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 var Rule = &rule{}
 
 type rule struct {
+	svcCtx *svc.ServiceContext
 }
 
 // Get 创建获取指定规则链路由

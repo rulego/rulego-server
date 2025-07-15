@@ -19,21 +19,23 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rulego/rulego-server/config"
-	"github.com/rulego/rulego-server/config/logger"
-	"github.com/rulego/rulego-server/internal/router"
-	"github.com/rulego/rulego-server/internal/service"
-	"gopkg.in/ini.v1"
 	"log"
 	"net/http"
-	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
 
-	endpointApi "github.com/rulego/rulego/api/types/endpoint"
-	"github.com/rulego/rulego/endpoint/rest"
+	_ "net/http/pprof"
+
+	"github.com/rulego/rulego-server/config"
+	"github.com/rulego/rulego-server/config/logger"
+	"github.com/rulego/rulego-server/internal/router"
+	"github.com/rulego/rulego-server/internal/service"
+	"github.com/rulego/rulego-server/internal/svc"
+
 	"github.com/rulego/rulego/node_pool"
+
+	"gopkg.in/ini.v1"
 )
 
 const (
@@ -99,30 +101,23 @@ func main() {
 		log.Printf("loadNodePool file=%s \n", c.NodePoolFile)
 	}
 
-	//初始化服务
+	//初始化服务, @Deprecated
+	// @todo: remove this, svc.NewServcieContext should be used instead
 	if err := service.Setup(c); err != nil {
 		log.Fatal("setup service error:", err)
 	}
-	/////初始化核心引擎服务
-	//if err := service.InitCoreEngineService(c); err != nil {
-	//	log.Fatal("init core engine server error:", err)
-	//}
-	//var mqttEndpoint endpointApi.Endpoint
-	////创建mqtt接入服务
-	//if c.Mqtt.Enabled {
-	//	mqttEndpoint, _ = router.MqttServe(c, logger.Logger)
-	//}
+
 	//创建rest服务
 	restEndpoint := router.NewRestServe(c)
-	restEndpoint.OnEvent = func(eventName string, params ...interface{}) {
-		if eventName == endpointApi.EventInitServer {
-			//加载静态文件
-			router.LoadServeFiles(c, restEndpoint)
-			wsEndpoint := router.NewWebsocketServe(c, params[0].(*rest.Rest))
-			if err := wsEndpoint.Start(); err != nil {
-				log.Fatal("error:", err)
-			}
-		}
+
+	// 依赖服务初始化
+	svcCtx := svc.NewServiceContext(c)
+
+	log.Printf("start server at %s \n", svcCtx.Config.Server)
+	// 注册路由, 依赖注入
+	err := router.RegisterHanler(restEndpoint, svcCtx)
+	if err != nil {
+		log.Fatal("error:", err)
 	}
 	//启动服务
 	if err := restEndpoint.Start(); err != nil {
@@ -133,17 +128,13 @@ func main() {
 	// 监听系统信号，包括中断信号和终止信号
 	signal.Notify(sigs, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	select {
-	case <-sigs:
-		if restEndpoint != nil {
-			restEndpoint.Destroy()
-		}
-		//if mqttEndpoint != nil {
-		//	mqttEndpoint.Destroy()
-		//}
-		log.Println("stopped server")
-		os.Exit(0)
+	<-sigs
+	if restEndpoint != nil {
+		restEndpoint.Destroy()
 	}
+
+	log.Println("stopped server")
+	os.Exit(0)
 }
 
 // 初始化日志记录器

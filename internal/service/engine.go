@@ -3,6 +3,13 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os"
+	"path"
+	"path/filepath"
+	"sync"
+	"time"
+
 	"github.com/dop251/goja"
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego-server/config"
@@ -16,12 +23,6 @@ import (
 	"github.com/rulego/rulego/utils/fs"
 	"github.com/rulego/rulego/utils/json"
 	"github.com/rulego/rulego/utils/maps"
-	"log"
-	"os"
-	"path"
-	"path/filepath"
-	"sync"
-	"time"
 )
 
 var UserRuleEngineServiceImpl *UserRuleEngineService
@@ -95,7 +96,7 @@ func (s *UserRuleEngineService) Get(username string) (*RuleEngineService, bool) 
 func (s *UserRuleEngineService) Init(username string) (*RuleEngineService, error) {
 	if v, err := NewRuleEngineServiceAndInitRuleGo(s.config, username); err == nil {
 		s.locker.Lock()
-		s.Pool[username] = v
+		s.Pool[username] = v // FIXME: username若冲突是否应该要禁止更新, 防止数据被覆盖; 且应该考虑前置判断
 		s.locker.Unlock()
 		return v, nil
 	} else {
@@ -121,6 +122,10 @@ type RuleEngineService struct {
 	mcpService         *McpService
 	// shareNodeService 共享节点服务
 	shareNodeService *ShareNodeService
+
+	// 只在初始化非并发修改一次，平时不更改
+	passChains []string // 成功加载的规则链
+	failChains []string // 加载失败的规则链
 }
 
 func NewRuleEngineServiceAndInitRuleGo(c config.Config, username string) (*RuleEngineService, error) {
@@ -270,6 +275,25 @@ func (s *RuleEngineService) SaveAndLoad(chainId string, def []byte) error {
 		// 部署规则链
 		return s.Deploy(chainId)
 	}
+}
+
+// 获取有效的规则链
+func (s *RuleEngineService) ListPassIds() []string {
+	apps := make([]string, 0)
+	return append(apps, s.passChains...)
+}
+
+// 获取有效的规则链
+func (s *RuleEngineService) ListPass() ([]types.RuleChain, error) {
+	rcs := make([]types.RuleChain, 0)
+	for _, chainId := range s.passChains {
+		rc, err := s.ruleDao.GetAsRuleChain(s.username, chainId)
+		if err != nil {
+			continue
+		}
+		rcs = append(rcs, rc)
+	}
+	return rcs, nil
 }
 
 // List 获取所有规则链
@@ -453,18 +477,6 @@ func (s *RuleEngineService) SetMainChainId(chainId string) error {
 	}
 }
 
-// saveRuleChain 持久化规则链
-func (s *RuleEngineService) saveRuleChain(ruleChain types.RuleChain, whenErr error) error {
-	if whenErr != nil {
-		ruleChain.RuleChain.Disabled = true
-		ruleChain.RuleChain.PutAdditionalInfo(constants.AddiKeyMessage, whenErr.Error())
-	}
-	if def, err := json.Marshal(ruleChain); err != nil {
-		return err
-	} else {
-		return s.ruleDao.Save(s.username, ruleChain.RuleChain.ID, def)
-	}
-}
 func (s *RuleEngineService) GetEngine(chainId string) (types.RuleEngine, bool) {
 	return s.Pool.Get(chainId)
 }
@@ -572,6 +584,19 @@ func (s *RuleEngineService) InitRuleGo(logger *log.Logger, workspacePath string,
 	_ = s.loadRules(rulesPath)
 }
 
+// saveRuleChain 持久化规则链
+func (s *RuleEngineService) saveRuleChain(ruleChain types.RuleChain, whenErr error) error {
+	if whenErr != nil {
+		ruleChain.RuleChain.Disabled = true
+		ruleChain.RuleChain.PutAdditionalInfo(constants.AddiKeyMessage, whenErr.Error())
+	}
+	if def, err := json.Marshal(ruleChain); err != nil {
+		return err
+	} else {
+		return s.ruleDao.Save(s.username, ruleChain.RuleChain.ID, def)
+	}
+}
+
 // 加载js
 func (s *RuleEngineService) loadJs(folderPath string) error {
 	// 创建文件夹
@@ -626,16 +651,27 @@ func (s *RuleEngineService) loadRules(folderPath string) error {
 		return err
 	}
 	var count = 0
+
+	passChains := make([]string, 0, len(paths))
+	failChains := make([]string, 0)
+
 	// Load each file and create a new rule engine instance from its contents.
 	for _, p := range paths {
 		fileName := filepath.Base(p)
 		chainId := fileName[:len(fileName)-len(filepath.Ext(fileName))]
 		if err = s.Load(chainId); err != nil {
+			failChains = append(s.failChains, chainId)
 			s.logger.Printf("load rule chain id:%s error: %s", chainId, err.Error())
 		} else {
+			passChains = append(s.passChains, chainId)
 			count++
 		}
 	}
+
+	// 记录加载结果
+	s.passChains = passChains
+	s.failChains = failChains
+
 	s.logger.Printf("%s number of rule chains loaded :%d", s.username, count)
 	// 加载主规则链
 	if mainChainId := s.userSettingDao.Get(constants.SettingKeyMainChainId); mainChainId != "" {

@@ -3,17 +3,18 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/rulego/rulego-server/config"
-	"github.com/rulego/rulego-server/internal/constants"
-	"github.com/rulego/rulego-server/internal/model"
-	"github.com/rulego/rulego-server/internal/service"
-	"github.com/rulego/rulego/endpoint/rest"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/rulego/rulego-server/config"
+	"github.com/rulego/rulego-server/internal/constants"
+	"github.com/rulego/rulego-server/internal/model"
+	"github.com/rulego/rulego-server/internal/service"
+	"github.com/rulego/rulego/endpoint/rest"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/rulego/rulego/api/types"

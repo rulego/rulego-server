@@ -1,10 +1,16 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/rulego/rulego-server/config"
 	"github.com/rulego/rulego-server/config/logger"
 	"github.com/rulego/rulego-server/internal/constants"
 	"github.com/rulego/rulego-server/internal/service"
+	"github.com/rulego/rulego-server/internal/svc"
+
 	"github.com/rulego/rulego/api/types"
 	endpointApi "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/builtin/processor"
@@ -13,14 +19,14 @@ import (
 	"github.com/rulego/rulego/node_pool"
 	"github.com/rulego/rulego/utils/json"
 	"github.com/rulego/rulego/utils/str"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
-var Node = &node{}
+var Node = &node{
+	svcCtx: svc.GetServiceContext(), // FIXME: 应该从外部注入,但目前改造麻烦，先妥协
+}
 
 type node struct {
+	svcCtx *svc.ServiceContext
 }
 
 // Components 创建获取规则引擎节点组件列表路由

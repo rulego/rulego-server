@@ -3,55 +3,65 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/rulego/rulego-server/config/logger"
 	"github.com/rulego/rulego-server/internal/constants"
 	"github.com/rulego/rulego-server/internal/service"
+	"github.com/rulego/rulego-server/internal/svc"
 	"github.com/rulego/rulego-server/internal/utils"
 	endpointApi "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/endpoint"
 	"github.com/rulego/rulego/utils/json"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 // ShareNodeHttpImpl 处理共享节点 http 请求
-type ShareNodeHttpImpl struct{}
+type ShareNodeHttpImpl struct {
+	svcCtx *svc.ServiceContext
+}
 
 // NewShareNodeHttpImpl 创建共享节点实例
-func NewShareNodeHttpImpl() *ShareNodeHttpImpl {
-	return &ShareNodeHttpImpl{}
+func NewShareNodeHttpImpl(svcCtx *svc.ServiceContext) *ShareNodeHttpImpl {
+
+	return &ShareNodeHttpImpl{
+		svcCtx: svcCtx,
+	}
 }
 
 // ListShareNodes 共享节点列表
 func (sdt *ShareNodeHttpImpl) ListShareNodes(url string) endpointApi.Router {
-	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().listShareNodes).End()
+	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode(sdt.svcCtx).listShareNodes).End()
 }
 
 // GetShareNodeByID 获取共享节点详情
 func (sdt *ShareNodeHttpImpl) GetShareNodeByID(url string) endpointApi.Router {
-	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().getShareNodeByID).End()
+	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode(sdt.svcCtx).getShareNodeByID).End()
 }
 
 // UpsertShareNode 创建或更新共享节点
 func (sdt *ShareNodeHttpImpl) UpsertShareNode(url string) endpointApi.Router {
-	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().upsertShareNode).End()
+	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode(sdt.svcCtx).upsertShareNode).End()
 }
 
 // DelShareNode 删除共享节点
 func (sdt *ShareNodeHttpImpl) DelShareNode(url string) endpointApi.Router {
-	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().delShareNode).End()
+	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode(sdt.svcCtx).delShareNode).End()
 }
 
 // ShareNode 共享节点逻辑处理
 type ShareNode struct {
 	// NodeType 节点类型
 	NodeType string
+	svcCtx   *svc.ServiceContext
 }
 
 // NewShareNode 创建共享节点实例
-func NewShareNode() *ShareNode {
-	return &ShareNode{}
+func NewShareNode(svcCtx *svc.ServiceContext) *ShareNode {
+	return &ShareNode{
+		svcCtx: svcCtx,
+	}
 }
 
 // listShareNodes 共享节点列表
