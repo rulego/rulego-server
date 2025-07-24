@@ -148,18 +148,18 @@ function clearFlowData() {
 
 function rerenderFlowData() {
   if (!flowViewRef.value) return;
-  const lf = flowViewRef.value.getLf();
   const userData = cloneDeep(props.modelValue);
-  const { nodes, edges } = mapRuleGoModelToFlowDataModel(
+  const { nodes: newNodes, edges: newEdges } = mapRuleGoModelToFlowDataModel(
     userData,
     menuList.value,
   );
 
-  //  重新渲染数据
-  lf.renderRawData({
-    nodes,
-    edges,
-  });
+  // 更新本地数据，就像generateFlowData一样
+  nodes.value = newNodes;
+  edges.value = newEdges;
+  
+  // 使用与generateFlowData相同的渲染方法
+  flowViewRef.value.lfRender();
 }
 
 function generateFlowData() {
