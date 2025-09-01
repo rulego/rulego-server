@@ -448,10 +448,10 @@ github.com/robfig/cron/v3 v3.0.1/go.mod h1:eQICP3HwyT7UooqI/z+Ov+PtYAWygg1TEWWzG
 github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
 github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0tI/otEQ=
 github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7so1lCWt35ZSgc=
-github.com/rulego/rulego v0.33.0-alpha.3.0.20250831123805-063299cf7bc8 h1:UbIlC8q0imAXu9eyiP1OmWfRqbMInK7SbEA1zkOxrdw=
-github.com/rulego/rulego v0.33.0-alpha.3.0.20250831123805-063299cf7bc8/go.mod h1:rG+UAVIHH1I7UZkDoG3R6fbDoPGImvIHOFqb9V91Sqk=
-github.com/rulego/rulego-components v0.32.1-0.20250831144658-1359bad8348a h1:tdaC86EUriQ0GLllBXoiE9KVLUotEfeExetQ8yE21/M=
-github.com/rulego/rulego-components v0.32.1-0.20250831144658-1359bad8348a/go.mod h1:rLPgVgLp3Rb4TF+VE5RhGB0ziZkmwkRrqyLlmKfwAME=
+github.com/rulego/rulego v0.33.0-alpha.3.0.20250901101133-4cf5239b9d02 h1:SlpGehy8JjHHzSaxIzVCU7aGIy1/kpvrN5p26wzKIhU=
+github.com/rulego/rulego v0.33.0-alpha.3.0.20250901101133-4cf5239b9d02/go.mod h1:AmnMby85wUZjeF8OYCJ8vv/JPll5Kq4XKhr9AvJ2usw=
+github.com/rulego/rulego-components v0.32.1-0.20250901104911-aeea3509c4f9 h1:fI0xN+zMo6Zw3Cp/zvmqEBNLA2I9neNLje3rhHwwS/A=
+github.com/rulego/rulego-components v0.32.1-0.20250901104911-aeea3509c4f9/go.mod h1:rLPgVgLp3Rb4TF+VE5RhGB0ziZkmwkRrqyLlmKfwAME=
 github.com/rulego/rulego-components-ai v0.31.1 h1:XU608X0xL/y+sKG4G+Urm6wybE62K5QgfI+yhdsNlsc=
 github.com/rulego/rulego-components-ai v0.31.1/go.mod h1:jVZ9bKhKAdYn2No5Q+EIUp2l31vBmDnhLwq/KM2IUu8=
 github.com/rulego/rulego-components-ci v0.32.0 h1:xguPOhgX9HitXWV8549ZhaBjuQPVqEwjsPa+ly/A22U=
