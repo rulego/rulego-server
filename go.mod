@@ -8,8 +8,8 @@ require (
 	github.com/dop251/goja v0.0.0-20231024180952-594410467bc6
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/mark3labs/mcp-go v0.18.0
-	github.com/rulego/rulego v0.33.4-0.20251027144454-3c5ca7cef078
-	github.com/rulego/rulego-components v0.32.1-0.20250901104911-aeea3509c4f9
+	github.com/rulego/rulego v0.34.1-0.20251101152657-93a11f5131e6
+	github.com/rulego/rulego-components v0.34.1-0.20250904010906-d836d7c09569
 	github.com/rulego/rulego-components-ai v0.31.1
 	github.com/rulego/rulego-components-ci v0.32.0
 	github.com/rulego/rulego-components-etl v0.29.1-0.20250602160310-2d30a072f03b
