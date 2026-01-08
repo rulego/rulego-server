@@ -171,7 +171,8 @@ func (c *node) getCustomNodeList(getFromMarketplace bool, checkMy bool, exchange
 			return userNotFound(username, exchange)
 		}
 		//标记已安装、需要升级的组件
-		for _, item := range components {
+		for i := range components {
+			item := &components[i]
 			if item.RuleChain.AdditionalInfo == nil {
 				item.RuleChain.AdditionalInfo = map[string]interface{}{}
 			}
