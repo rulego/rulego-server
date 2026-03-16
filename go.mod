@@ -8,12 +8,12 @@ require (
 	github.com/dop251/goja v0.0.0-20251201205617-2bb4c724c0f9
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/mark3labs/mcp-go v0.18.0
-	github.com/rulego/rulego v0.35.2-0.20260122024852-410e6502fe2b
-	github.com/rulego/rulego-components v0.35.2-0.20260109041447-57d90e117e56
+	github.com/rulego/rulego v0.35.3-0.20260204081739-95e6242cc74a
+	github.com/rulego/rulego-components v0.35.3-0.20260204104619-2ada71ac7327
 	github.com/rulego/rulego-components-ai v0.31.1
 	github.com/rulego/rulego-components-ci v0.32.0
 	github.com/rulego/rulego-components-etl v0.29.1-0.20250602160310-2d30a072f03b
-	github.com/rulego/rulego-components-iot v0.32.0-alpha.1
+	github.com/rulego/rulego-components-iot v0.32.2-0.20260204103622-e3ad652df793
 	gopkg.in/ini.v1 v1.67.0
 )
 
@@ -47,6 +47,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.5 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cncf/xds/go v0.0.0-20250501225837-2ac532fd4443 // indirect
+	github.com/creack/goselect v0.1.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -92,7 +93,7 @@ require (
 	github.com/google/pprof v0.0.0-20241029153458-d1b30febd7db // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/gopcua/opcua v0.6.1 // indirect
+	github.com/gopcua/opcua v0.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
@@ -154,7 +155,7 @@ require (
 	github.com/shirou/gopsutil/v4 v4.25.5-0.20250517063057-34ac457e154c // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/siddontang/go-log v0.0.0-20180807004314-8d05993dda07 // indirect
-	github.com/simonvetter/modbus v1.6.3 // indirect
+	github.com/simonvetter/modbus v1.6.4 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
@@ -179,6 +180,7 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	github.com/zeebo/errs v1.4.0 // indirect
+	go.bug.st/serial v1.6.4 // indirect
 	go.mongodb.org/mongo-driver v1.17.6 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect
