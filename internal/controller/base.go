@@ -69,15 +69,22 @@ var AuthProcess = func(router endpointApi.Router, exchange *endpointApi.Exchange
 	} else if r, ok := exchange.In.(endpointApi.HeaderModifier); ok {
 		metadata = r.GetMetadata()
 	}
+
+	// 先从 header 获取 authorization
 	authorization := exchange.In.Headers().Get(constants.KeyAuthorization)
+
 	if !config.Get().RequireAuth && authorization == "" {
 		//允许匿名访问
-		metadata.PutValue(constants.KeyUsername, config.C.DefaultUsername)
+		if metadata != nil {
+			metadata.PutValue(constants.KeyUsername, config.C.DefaultUsername)
+		}
 		return true
 	}
 	username := getUsernameApiKey(authorization) // "Bearer api_key" 方式
 	if username != "" {
-		metadata.PutValue(constants.KeyUsername, username)
+		if metadata != nil {
+			metadata.PutValue(constants.KeyUsername, username)
+		}
 		return true
 	} else {
 		claim, err := parseToken(authorization) // "Bearer jwt" 方式
@@ -86,10 +93,11 @@ var AuthProcess = func(router endpointApi.Router, exchange *endpointApi.Exchange
 			exchange.Out.SetBody([]byte(err.Error()))
 			return false
 		}
-		metadata.PutValue(constants.KeyUsername, claim.Username)
+		if metadata != nil {
+			metadata.PutValue(constants.KeyUsername, claim.Username)
+		}
 		return true
 	}
-
 }
 
 func GetComponentsFromMarketplace(baseUrl, keywords string, root *bool, currentPage, size int) (ComponentList, error) {
