@@ -16,7 +16,6 @@ import (
 	"github.com/rulego/rulego/utils/fs"
 	"github.com/rulego/rulego/utils/json"
 	"github.com/rulego/rulego/utils/maps"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -108,7 +107,7 @@ type RuleEngineService struct {
 	username   string
 	config     config.Config
 	ruleConfig types.Config
-	logger     *log.Logger
+	logger     *logger.DefaultLogger
 	// 基于内存的节点调试数据管理器
 	// 如果需要查询历史数据，请把调试日志数据存放数据库等可以持久化载体
 	ruleChainDebugData *RuleChainDebugData
@@ -499,7 +498,7 @@ func (s *RuleEngineService) DebugData() *RuleChainDebugData {
 }
 
 // InitRuleGo 初始化规则链池
-func (s *RuleEngineService) InitRuleGo(logger *log.Logger, workspacePath string, username string) {
+func (s *RuleEngineService) InitRuleGo(logger *logger.DefaultLogger, workspacePath string, username string) {
 	var ruleConfig = s.ruleConfig
 	// 加载自定义配置
 	for k, v := range s.config.Global {
