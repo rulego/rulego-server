@@ -33,22 +33,22 @@ const APP_MANAGE_MENU_KEY = {
 const menuList = ref([
   {
     key: APP_MANAGE_MENU_KEY.BASE_INFO,
-    label: '基础信息',
+    label: 'Basic Information',
     icon: 'el-icon-menu',
   },
   {
     key: APP_MANAGE_MENU_KEY.VARIABLE,
-    label: '变量',
+    label: 'Variables',
     icon: 'el-icon-menu',
   },
   {
     key: APP_MANAGE_MENU_KEY.RUN_LOG,
-    label: '运行日志',
+    label: 'Run Logs',
     icon: 'el-icon-menu',
   },
   {
     key: APP_MANAGE_MENU_KEY.APP_INTEGRATION,
-    label: '应用集成',
+    label: 'Application Integration',
     icon: 'el-icon-menu',
   },
 ]);

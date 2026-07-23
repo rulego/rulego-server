@@ -28,7 +28,7 @@ const formData = ref({
 });
 const formRules = ref({
   messageType: [
-    { required: true, message: '消息类型不能为空', trigger: 'blur' },
+    { required: true, message: 'Message type is required', trigger: 'blur' },
   ],
 });
 const showDrawer = ref(false);
@@ -86,7 +86,7 @@ function createWebSocket() {
       let nodeLog = newLogData[nodeId];
       if (!nodeLog) {
         newLogData[nodeId] = {
-          // Id 节点ID
+          // Id node ID
           nodeId: nodeId,
           logItems: [],
         };
@@ -97,17 +97,17 @@ function createWebSocket() {
       let nodeLog = newLogData[nodeId];
       if (!nodeLog) {
         newLogData[nodeId] = {
-          // Id 节点ID
+          // Id node ID
           nodeId: nodeId,
-          // OutMsg 输出消息
+          // OutMsg outputs messages
           outMsg: dataObject.msg,
-          // RelationType 和下一个节点连接类型
+          // The Relation Type and the next node connection type
           relationType: dataObject.relationType,
-          // Err 错误信息
+          // ERR error message
           err: dataObject.err,
-          // LogItems 执行过程中的日志
+          // LogItems during execution
           logItems: [],
-          // EndTs执行结束时间
+          // EndTs execution end time
           endTs: event.ts || new Date().getTime(),
         };
       } else {
@@ -120,7 +120,7 @@ function createWebSocket() {
       let nodeLog = newLogData[nodeId];
       if (!nodeLog) {
         newLogData[nodeId] = {
-          // Id 节点ID
+          // Id node ID
           nodeId: nodeId,
           logItems: [],
           inMsg: dataObject.msg,
@@ -139,7 +139,7 @@ function createWebSocket() {
     });
   };
   socket.onerror = function () {
-    ElMessage.error('WebSocket 错误');
+    ElMessage.error('WebSocket Error');
   };
 }
 
@@ -224,8 +224,8 @@ defineExpose({
   >
     <template #header="{ close }">
       <div class="flex justify-end border-b border-solid border-gray-200 p-2">
-        <el-button @click="close">关闭</el-button>
-        <el-button type="primary" @click="sendHandler">发送</el-button>
+        <el-button @click="close">Close</el-button>
+        <el-button type="primary" @click="sendHandler">Send it</el-button>
       </div>
     </template>
     <div class="flex h-full w-full flex-col overflow-auto">
@@ -237,9 +237,9 @@ defineExpose({
             <div
               class="flex flex-none items-center justify-between p-2 text-slate-800"
             >
-              <div>请求参数</div>
+              <div>Request parameters</div>
               <div>
-                <el-checkbox v-model="outputResult" label="输出结果" />
+                <el-checkbox v-model="outputResult" label="Output" />
               </div>
             </div>
             <div class="flex-none px-2">
@@ -248,10 +248,10 @@ defineExpose({
                 :model="formData"
                 :rules="formRules"
               >
-                <el-form-item label="消息类型" prop="messageType">
+                <el-form-item label="Message Type" prop="messageType">
                   <el-input
                     v-model="formData.messageType"
-                    placeholder="消息类型"
+                    placeholder="Message Type"
                   />
                 </el-form-item>
               </el-form>
@@ -262,12 +262,15 @@ defineExpose({
                   v-model="requestActiveName"
                   @tab-click="requestTabClickHandler"
                 >
-                  <el-tab-pane label="元数据" name="metadata"></el-tab-pane>
+                  <el-tab-pane label="Metadata" name="metadata"></el-tab-pane>
                   <el-tab-pane
-                    label="请求头"
+                    label="Request Headers"
                     name="requestHeaders"
                   ></el-tab-pane>
-                  <el-tab-pane label="请求体" name="requestBody"></el-tab-pane>
+                  <el-tab-pane
+                    label="Request Body"
+                    name="requestBody"
+                  ></el-tab-pane>
                 </el-tabs>
               </div>
               <div class="flex-grow overflow-auto">
@@ -278,16 +281,19 @@ defineExpose({
             </div>
           </div>
           <div class="flex w-1/2 flex-col">
-            <div class="flex-none p-2 text-slate-800">返回结果</div>
+            <div class="flex-none p-2 text-slate-800">Return results</div>
             <div class="flex flex-grow flex-col overflow-auto px-2 pb-2">
               <div>
                 <el-tabs
                   v-model="responseActiveName"
                   @tab-click="responseTabClickHandler"
                 >
-                  <el-tab-pane label="响应体" name="responseBody"></el-tab-pane>
                   <el-tab-pane
-                    label="响应头"
+                    label="Response Body"
+                    name="responseBody"
+                  ></el-tab-pane>
+                  <el-tab-pane
+                    label="Response Headers"
                     name="responseHeaders"
                   ></el-tab-pane>
                 </el-tabs>
@@ -307,9 +313,9 @@ defineExpose({
         <div
           class="flex flex-none items-center justify-between pb-2 text-slate-800"
         >
-          <div>日志</div>
+          <div>Log</div>
           <el-button @click="toggleCollapseOpenHandler">
-            {{ collapseIsOpenAll ? '收起全部' : '展开全部' }}
+            {{ collapseIsOpenAll ? 'Collapse All' : 'Expand All' }}
           </el-button>
         </div>
         <div class="flex-grow overflow-auto">
@@ -385,16 +391,16 @@ defineExpose({
                 <div class="overflow-hidden p-2">
                   <div class="rounded-md bg-[#e9e9eb] p-2">
                     <div class="mb-2 rounded-md bg-[#f4f4f5] p-2">
-                      <div class="font-semibold">输入</div>
+                      <div class="font-semibold">Input</div>
                       <div>{{ item.inMsg && item.inMsg.data }}</div>
                     </div>
                     <div class="mb-2 rounded-md bg-[#f4f4f5] p-2">
-                      <div class="font-semibold">日志</div>
+                      <div class="font-semibold">Log</div>
                       <div>
                         {{
                           item.logItems && item.logItems.length > 0
                             ? item.logItems[0]
-                            : '无'
+                            : 'None'
                         }}
                       </div>
                       <div v-for="(log, index) in item.logItems">
@@ -402,12 +408,12 @@ defineExpose({
                       </div>
                     </div>
                     <div class="mb-2 rounded-md bg-[#f4f4f5] p-2">
-                      <div class="font-semibold">输出</div>
+                      <div class="font-semibold">Output</div>
                       <div>{{ item.outMsg && item.outMsg.data }}</div>
                     </div>
                     <div class="rounded-md bg-[#f4f4f5] p-2">
-                      <div class="font-semibold">错误</div>
-                      <div>{{ item.err || '无' }}</div>
+                      <div class="font-semibold">Wrong</div>
+                      <div>{{ item.err || 'None' }}</div>
                     </div>
                   </div>
                 </div>

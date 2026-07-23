@@ -66,7 +66,11 @@ watch(
         <div class="w-full">
           <div class="flex items-center px-3">
             <div class="flex-grow overflow-auto pr-3">
-              <input class="w-full" v-model="item.value" placeholder="请输入" />
+              <input
+                class="w-full"
+                v-model="item.value"
+                placeholder="Enter a value"
+              />
             </div>
             <div
               class="flex flex-none items-center hover:cursor-pointer hover:text-[var(--el-color-primary)]"
@@ -83,14 +87,14 @@ watch(
         class="h-min-7 w-full border-t border-gray-200 text-center text-gray-400 first:border-t-0"
         v-if="dataList.length === 0"
       >
-        无
+        None
       </div>
       <div class="h-min-7 group flex border-t border-gray-200">
         <div
           class="w-full overflow-hidden bg-[var(--el-color-primary)] text-center text-white hover:cursor-pointer hover:bg-[var(--el-color-primary-light-3)]"
           @click="addHandler"
         >
-          添加
+          Additional
         </div>
       </div>
       <div v-if="props.desc">

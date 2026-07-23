@@ -73,20 +73,20 @@ function exportHandler() {
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="manageHandler"
-                    >管理</el-dropdown-item
+                    >Administration</el-dropdown-item
                   >
                   <el-dropdown-item @click="designHandler"
-                    >设计</el-dropdown-item
+                    >Design</el-dropdown-item
                   >
                   <el-dropdown-item :divided="true" @click="deploymentHandler">
-                    {{ props.disabled ? '部署' : '下线' }}
+                    {{ props.disabled ? 'Deploy' : 'Take Offline' }}
                   </el-dropdown-item>
-                  <el-dropdown-item :divided="true"> 复制 </el-dropdown-item>
+                  <el-dropdown-item :divided="true"> Copy </el-dropdown-item>
                   <el-dropdown-item @click="exportHandler"
-                    >导出</el-dropdown-item
+                    >Export</el-dropdown-item
                   >
                   <el-dropdown-item :divided="true" @click="deleteHandler"
-                    >删除</el-dropdown-item
+                    >Delete</el-dropdown-item
                   >
                 </el-dropdown-menu>
               </template>

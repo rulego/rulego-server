@@ -31,7 +31,7 @@ const formState = ref({});
 const fields = ref(generateFormFields(props.options));
 const editIndex = ref(-1);
 const dialogVisibleTitle = computed(() => {
-  return isEdit.value ? '编辑' : '新增';
+  return isEdit.value ? 'Edit' : 'Add';
 });
 
 function generateFormState() {
@@ -142,7 +142,7 @@ watch(
           :resizable="false"
         />
         <el-table-column
-          label="操作"
+          label="Actions"
           :resizable="false"
           :fixed="'right'"
           width="100"
@@ -153,14 +153,14 @@ watch(
               size="small"
               type="primary"
               @click="editHandler(scope.row, scope.$index)"
-              >编辑</el-button
+              >Edit</el-button
             >
             <el-button
               :link="true"
               size="small"
               type="primary"
               @click="deleteHandler(scope.$index)"
-              >删除</el-button
+              >Delete</el-button
             >
           </template>
         </el-table-column>
@@ -171,7 +171,7 @@ watch(
           type="primary"
           size="small"
           @click="addHandler"
-          >添加</el-button
+          >Additional</el-button
         >
       </div>
     </div>
@@ -189,8 +189,10 @@ watch(
       ></config-form>
       <template #footer>
         <div>
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="addSubmitHandler">确认</el-button>
+          <el-button @click="closeDialog">Cancel</el-button>
+          <el-button type="primary" @click="addSubmitHandler"
+            >Confirm</el-button
+          >
         </div>
       </template>
     </el-dialog>

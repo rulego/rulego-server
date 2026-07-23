@@ -64,8 +64,8 @@ watch(
   <div class="relative w-full">
     <div class="overflow-hidden rounded-lg border border-[#10182814]">
       <div class="flex h-7 items-center uppercase leading-7 text-[#676f83]">
-        <div class="h-full w-1/2 border-r border-[#10182814] pl-3">键</div>
-        <div class="h-full w-1/2 border-r border-[#10182814] pl-3">值</div>
+        <div class="h-full w-1/2 border-r border-[#10182814] pl-3">Key</div>
+        <div class="h-full w-1/2 border-r border-[#10182814] pl-3">Value</div>
       </div>
       <div
         class="h-min-7 group flex border-t border-gray-200"
@@ -98,7 +98,7 @@ watch(
           class="w-full overflow-hidden bg-[var(--el-color-primary)] text-center text-white hover:cursor-pointer hover:bg-[var(--el-color-primary-light-3)]"
           @click="addHandler"
         >
-          添加
+          Additional
         </div>
       </div>
     </div>

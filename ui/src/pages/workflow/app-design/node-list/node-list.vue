@@ -121,7 +121,7 @@ defineExpose({
     <el-scrollbar :max-height="`${rootReact.height}px`">
       <div class="w-[200px]">
         <div class="p-2">
-          <el-input v-model="keyword" placeholder="搜索节点"></el-input>
+          <el-input v-model="keyword" placeholder="Search nodes"></el-input>
         </div>
         <div class="p-2 pt-0">
           <div v-for="item in menuList" :key="item.key">

@@ -94,7 +94,7 @@ function deleteHandler() {
         <el-icon>
           <el-icon-plus></el-icon-plus>
         </el-icon>
-        <span>添加 AND 条件</span>
+        <span>Add AND conditions</span>
       </el-button>
       <el-button
         v-if="showDeleteBtn"
@@ -117,7 +117,7 @@ function deleteHandler() {
             ></path>
           </svg>
         </el-icon>
-        <span>移除</span>
+        <span>Removal</span>
       </el-button>
     </div>
     <div class="flex justify-center" v-if="props.showOrIcon">

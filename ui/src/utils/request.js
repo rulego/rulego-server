@@ -34,7 +34,9 @@ request.interceptors.response.use(
   (error) => {
     if (error.response) {
       const { status, data } = error.response;
-      ElMessage.error(`Error ${status}: ${data.message || JSON.stringify(data)}`);
+      ElMessage.error(
+        `Error ${status}: ${data.message || JSON.stringify(data)}`,
+      );
     } else {
       ElMessage.error(`Error: ${error.message}`);
     }

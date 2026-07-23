@@ -42,9 +42,9 @@ const (
 )
 
 var (
-	//是否是查询版本
+	//Is it a query version?
 	ver bool
-	//配置文件
+	//Profile file
 	configFile string
 )
 
@@ -61,29 +61,29 @@ func main() {
 		os.Exit(0)
 	}
 
-	// 首先设置默认配置
+	// First, set the default configuration
 	c := config.DefaultConfig
 
-	// 如果指定了配置文件，则从配置文件加载配置（环境变量未设置的项）
+	// If a configuration file is specified, load the configuration from the file (items not set in the environment variable)
 	if configFile != "" {
 		if cfg, err := ini.Load(configFile); err != nil {
 			log.Fatal("error:", err)
 		} else {
-			// 从配置文件加载配置，但保留环境变量已设置的值
+			// Loads the configuration from the configuration file, but retains the values set for the environment variable
 			if err := cfg.MapTo(&c); err != nil {
 				log.Fatal("error:", err)
 			}
-			// 加载全局配置
+			// Load global configuration
 			if section, err := cfg.GetSection("global"); err == nil {
 				c.Global = section.KeysHash()
 			}
-			// 加载用户配置
+			// Load user configuration
 			if section, err := cfg.GetSection("users"); err == nil {
 				c.Users = section.KeysHash()
 			}
 		}
 	}
-	// 优先从环境变量加载配置
+	// Prioritize loading configuration from environment variables
 	c.LoadFromEnv()
 
 	config.Set(c)
@@ -101,7 +101,7 @@ func main() {
 
 	log.Printf("Get Converter Info: %s \n", str.GetConverterInfo())
 
-	//初始化用户名、密码、apiKey之间的映射
+	//Initialize the mapping between username, password, and apiKey
 	c.InitUserMap()
 	log.Printf("use config file=%s \n", configFile)
 
@@ -111,18 +111,18 @@ func main() {
 		log.Printf("loadNodePool file=%s \n", c.NodePoolFile)
 	}
 
-	//初始化rulego配置
+	//Initialize the rulego configuration
 	router.InitRulegoConfig()
-	//创建http服务
+	//Create an HTTP service
 	ep, err := router.NewRestServe(c)
 	if err != nil {
 		log.Fatal("error:", err)
 	}
-	//启动http服务
+	//Start the HTTP service
 	if err := ep.Start(); err != nil {
 		log.Fatal("error:", err)
 	}
-	//创建websocket服务
+	//Create a WebSocket service
 	if restEp, ok := ep.(endpointApi.HttpEndpoint); ok {
 		wsEp, err := router.NewWebsocketServe(c, restEp)
 		if err != nil {
@@ -132,13 +132,13 @@ func main() {
 			log.Fatal("websocket start error:", err)
 		}
 	}
-	//初始化服务
+	//Initialize the service
 	if err := service.Setup(c); err != nil {
 		log.Fatal("setup service error:", err)
 	}
 
 	sigs := make(chan os.Signal, 1)
-	// 监听系统信号，包括中断信号和终止信号
+	// Monitor system signals, including interrupt and termination signals
 	signal.Notify(sigs, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	select {
@@ -151,7 +151,7 @@ func main() {
 	}
 }
 
-// 初始化日志记录器
+// Initialize the log recorder
 func initLogger(c config.Config) *log.Logger {
 	if c.LogFile == "" {
 		return log.New(os.Stdout, "", log.LstdFlags)

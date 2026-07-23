@@ -8,7 +8,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: '未命名节点',
+    default: 'Unnamed nodes',
   },
 });
 </script>

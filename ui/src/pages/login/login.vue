@@ -14,8 +14,12 @@ const form = ref({
   password: 'admin',
 });
 const rules = ref({
-  username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  username: [
+    { required: true, message: 'Enter your account', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: 'Enter your password', trigger: 'blur' },
+  ],
 });
 const loading = ref(false);
 
@@ -26,10 +30,10 @@ async function handleSubmit() {
     const loginRes = await login(form.value);
     const token = loginRes.token;
     setSession(SESSIONSTORAGE_KEYS.TOKEN, token);
-    ElMessage.success('登录成功');
+    ElMessage.success('Logged in successfully');
     router.replace('/');
   } catch (error) {
-    console.error('登录失败:', error);
+    console.error('Login failed:', error);
   } finally {
     loading.value = false;
   }
@@ -43,7 +47,7 @@ async function handleSubmit() {
     <div
       class="relative flex h-full w-full items-center justify-center p-4 md:h-auto md:w-[420px]"
     >
-      <!-- 背景装饰 -->
+      <!-- Background decoration -->
       <div
         class="absolute inset-0 rounded-2xl bg-white/10 backdrop-blur-xl"
       ></div>
@@ -51,7 +55,7 @@ async function handleSubmit() {
         class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-white/5"
       ></div>
 
-      <!-- 登录框 -->
+      <!-- Login box -->
       <div class="relative w-full rounded-2xl bg-white p-8 shadow-2xl">
         <div class="flex flex-col items-center pb-8">
           <div class="text-3xl font-bold tracking-wider text-gray-800">
@@ -69,7 +73,7 @@ async function handleSubmit() {
           >
             <el-form-item prop="username">
               <el-input
-                placeholder="请输入账号"
+                placeholder="Enter your account"
                 v-model="form.username"
                 :prefix-icon="User"
                 :clearable="true"
@@ -79,7 +83,7 @@ async function handleSubmit() {
             </el-form-item>
             <el-form-item prop="password">
               <el-input
-                placeholder="请输入密码"
+                placeholder="Enter your password"
                 v-model="form.password"
                 :prefix-icon="Lock"
                 :clearable="true"
@@ -94,16 +98,29 @@ async function handleSubmit() {
               size="large"
               @click="handleSubmit"
             >
-              <span class="font-bold tracking-wider">登 录</span>
+              <span class="font-bold tracking-wider">Log In</span>
             </el-button>
           </el-form>
         </div>
       </div>
     </div>
   </div>
-  <footer class="fixed bottom-0 left-0 right-0 py-2 bg-white/50 backdrop-blur-sm text-center text-xs text-gray-400">
-    Copyright © 2025 <a href="https://github.com/rulego/rulego-server" target="_blank" style="color: #666; text-decoration: none;">RuleGo-Server</a>. All rights reserved. 
-    <a href="https://rulego.cc" target="_blank" class="text-blue-500 hover:underline">Powered by RuleGo</a>
+  <footer
+    class="fixed bottom-0 left-0 right-0 bg-white/50 py-2 text-center text-xs text-gray-400 backdrop-blur-sm"
+  >
+    Copyright © 2025
+    <a
+      href="https://github.com/rulego/rulego-server"
+      target="_blank"
+      style="color: #666; text-decoration: none"
+      >RuleGo-Server</a
+    >. All rights reserved.
+    <a
+      href="https://rulego.cc"
+      target="_blank"
+      class="text-blue-500 hover:underline"
+      >Powered by RuleGo</a
+    >
   </footer>
 </template>
 

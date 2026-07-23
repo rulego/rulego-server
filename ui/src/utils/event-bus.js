@@ -1,7 +1,7 @@
 import { useEventBus } from '@vueuse/core';
 
 export default {
-  // 用于 flow 编辑器
+  // Used for the Flow editor
   updateNodeProperties: () => useEventBus('updateNodeProperties'),
   closeNodeForm: () => useEventBus('closeNodeForm'),
   showNodeMenu: () => useEventBus('showNodeMenu'),

@@ -36,7 +36,7 @@ function dropdownMenuCommandHandler(command) {
     <div
       class="shadow-xs mr-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-[0.5px] border-border bg-blue-500 text-white"
     >
-      <!-- 图标占位 -->
+      <!-- Icon occupying a place -->
     </div>
     <div
       class="system-xs-medium text-text-secondary grow truncate"
@@ -45,7 +45,9 @@ function dropdownMenuCommandHandler(command) {
       {{ data.nodeTitle }}
     </div>
     <div class="mr-1 hidden shrink-0 group-hover:flex">
-      <el-button size="small" @click="jumpToNodeHandler">跳转到节点</el-button>
+      <el-button size="small" @click="jumpToNodeHandler"
+        >Jump to the node</el-button
+      >
     </div>
     <div
       class="shrink-0 items-center group-hover:flex"
@@ -59,7 +61,7 @@ function dropdownMenuCommandHandler(command) {
         <el-button size="small" icon="el-icon-more"></el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="delete">删除</el-dropdown-item>
+            <el-dropdown-item command="delete">Delete</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>

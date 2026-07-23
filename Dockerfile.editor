@@ -1,16 +1,16 @@
 
-# 使用 Nginx 托管静态文件
+# Serve the static files with Nginx
 FROM nginx:latest
 
-# 删除默认的 Nginx 配置文件
+# Remove the default Nginx content
 RUN rm -rf /usr/share/nginx/html/*
 
 
 COPY editor /usr/share/nginx/html/
-# 将前端构建结果复制到 Nginx 的默认目录
+# Update the editor API endpoint
 RUN sed -i 's/127.0.0.1:9090/127.0.0.1:9099/g' "/usr/share/nginx/html/config/config.js"
-# 暴露端口
+# Expose the service port
 EXPOSE 80
 
-# 启动 Nginx
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

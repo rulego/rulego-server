@@ -15,46 +15,46 @@ import (
 	"strings"
 )
 
-// ShareNodeHttpImpl 处理共享节点 http 请求
+// ShareNodeHttpImpl handles HTTP requests from shared nodes
 type ShareNodeHttpImpl struct{}
 
-// NewShareNodeHttpImpl 创建共享节点实例
+// NewShareNodeHttpImpl creates a shared node instance
 func NewShareNodeHttpImpl() *ShareNodeHttpImpl {
 	return &ShareNodeHttpImpl{}
 }
 
-// ListShareNodes 共享节点列表
+// ListShareNodes: A list of shared nodes
 func (sdt *ShareNodeHttpImpl) ListShareNodes(url string) endpointApi.Router {
 	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().listShareNodes).End()
 }
 
-// GetShareNodeByID 获取共享节点详情
+// GetShareNodeByID to obtain the details of the shared node
 func (sdt *ShareNodeHttpImpl) GetShareNodeByID(url string) endpointApi.Router {
 	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().getShareNodeByID).End()
 }
 
-// UpsertShareNode 创建或更新共享节点
+// UpsertShareNode creates or updates a shared node
 func (sdt *ShareNodeHttpImpl) UpsertShareNode(url string) endpointApi.Router {
 	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().upsertShareNode).End()
 }
 
-// DelShareNode 删除共享节点
+// DelShareNode deletes the shared node
 func (sdt *ShareNodeHttpImpl) DelShareNode(url string) endpointApi.Router {
 	return endpoint.NewRouter().From(url).Process(AuthProcess).Process(NewShareNode().delShareNode).End()
 }
 
-// ShareNode 共享节点逻辑处理
+// ShareNode handles shared node logic
 type ShareNode struct {
-	// NodeType 节点类型
+	// NodeType node type
 	NodeType string
 }
 
-// NewShareNode 创建共享节点实例
+// NewShareNode creates a shared node instance
 func NewShareNode() *ShareNode {
 	return &ShareNode{}
 }
 
-// listShareNodes 共享节点列表
+// listShareNodes: A list of shared nodes
 func (sd *ShareNode) listShareNodes(router endpointApi.Router, exchange *endpointApi.Exchange) bool {
 	msg := exchange.In.GetMsg()
 	username := strings.TrimSpace(msg.Metadata.GetValue(constants.KeyUsername))
@@ -133,7 +133,7 @@ func (sd *ShareNode) listShareNodes(router endpointApi.Router, exchange *endpoin
 	return true
 }
 
-// getShareNodeByID 获取共享节点详情
+// getShareNodeByID to obtain the details of the shared node
 func (sd *ShareNode) getShareNodeByID(router endpointApi.Router, exchange *endpointApi.Exchange) bool {
 	msg := exchange.In.GetMsg()
 	username := strings.TrimSpace(msg.Metadata.GetValue(constants.KeyUsername))
@@ -171,7 +171,7 @@ func (sd *ShareNode) getShareNodeByID(router endpointApi.Router, exchange *endpo
 	return true
 }
 
-// upsertShareNode 创建或更新共享节点
+// upsertShareNode creates or updates a shared node
 func (sd *ShareNode) upsertShareNode(router endpointApi.Router, exchange *endpointApi.Exchange) bool {
 	msg := exchange.In.GetMsg()
 	username := strings.TrimSpace(msg.Metadata.GetValue(constants.KeyUsername))
@@ -202,7 +202,7 @@ func (sd *ShareNode) upsertShareNode(router endpointApi.Router, exchange *endpoi
 	return true
 }
 
-// delShareNode 删除共享节点
+// delShareNode deletes the shared node
 func (sd *ShareNode) delShareNode(router endpointApi.Router, exchange *endpointApi.Exchange) bool {
 	msg := exchange.In.GetMsg()
 	username := strings.TrimSpace(msg.Metadata.GetValue(constants.KeyUsername))
@@ -234,7 +234,7 @@ func (sd *ShareNode) delShareNode(router endpointApi.Router, exchange *endpointA
 	return true
 }
 
-// checkNodType 检查节点类型
+// checkNodType checks the node type
 func (sd *ShareNode) checkNodType() error {
 	if utils.InArray(sd.NodeType, constants.GetShareNodesDir()) {
 		return nil

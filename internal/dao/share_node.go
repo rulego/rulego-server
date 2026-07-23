@@ -84,25 +84,25 @@ func (d *ShareNodeDao) rebuildIndex(indexType string) error {
 	paths = append(paths, d.username, constants.DirWorkflowsShareNodes, indexType)
 	logger.Logger.Printf("444Rebuilding share node index from directory:%s\n ", paths)
 
-	// 构建完整的路径
+	// Build a complete path
 	basePath := filepath.Join(paths...)
 
-	// 读取目录下的所有文件
+	// Read all files in the directory
 	files, err := os.ReadDir(basePath)
 	if err != nil {
 		return err
 	}
 
-	// 遍历文件
+	// Traverse the file
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
 		if filepath.Ext(strings.ToLower(file.Name())) == constants.RuleChainFileSuffix {
-			// 构建文件的完整路径
+			// Complete path to the build file
 			filePath := filepath.Join(basePath, file.Name())
 
-			// 读取文件内容
+			// Read the file content
 			data, err := os.ReadFile(filePath)
 			if err != nil {
 				continue
@@ -127,9 +127,9 @@ func (d *ShareNodeDao) UpsertNode(nodeInfo []byte) error {
 	if err := d.saveShareNode(node, nodeInfo); err != nil {
 		return err
 	}
-	// 创建索引
+	// Create indexes
 	d.createNodeIndex(node, constants.DirShareNode)
-	// 保存索引到文件
+	// Save the index to the file
 	return d.saveIndex(d.getIndexPath(constants.DirShareNode))
 }
 
@@ -142,9 +142,9 @@ func (d *ShareNodeDao) UpsertEndpoint(nodeInfo []byte) error {
 	if err := d.saveShareEndpoint(node, nodeInfo); err != nil {
 		return err
 	}
-	// 创建索引
+	// Create indexes
 	d.createEndpointIndex(node, constants.TypeShareEndpoint)
-	// 保存索引到文件
+	// Save the index to the file
 	return d.saveIndex(d.getIndexPath(constants.TypeShareEndpoint))
 }
 
@@ -159,15 +159,15 @@ func (d *ShareNodeDao) saveShareNode(node types.RuleNode, def []byte) error {
 	var paths = []string{d.config.DataDir, constants.DirWorkflows}
 	paths = append(paths, d.username, constants.DirWorkflowsShareNodes, constants.TypeShareNode)
 	pathStr := path.Join(paths...)
-	// 创建文件夹
+	// Create a folder
 	_ = fs.CreateDirs(pathStr)
-	// 保存到文件
+	// Save to file
 	var buf bytes.Buffer
 	if err := json.Indent(&buf, def, "", "  "); err != nil {
 		return err
 	}
 
-	// 保存规则链到文件
+	// Save the rule chain to the file
 	return fs.SaveFile(filepath.Join(pathStr, node.Id+constants.RuleChainFileSuffix), buf.Bytes())
 }
 
@@ -176,22 +176,22 @@ func (d *ShareNodeDao) saveShareEndpoint(node types.EndpointDsl, def []byte) err
 	var paths = []string{d.config.DataDir, constants.DirWorkflows}
 	paths = append(paths, d.username, constants.DirWorkflowsShareNodes, constants.TypeShareEndpoint)
 	pathStr := path.Join(paths...)
-	// 创建文件夹
+	// Create a folder
 	_ = fs.CreateDirs(pathStr)
-	// 保存到文件
+	// Save to file
 	var buf bytes.Buffer
 	if err := json.Indent(&buf, def, "", "  "); err != nil {
 		return err
 	}
 
-	// 保存规则链到文件
+	// Save the rule chain to the file
 	return fs.SaveFile(filepath.Join(pathStr, node.Id+constants.RuleChainFileSuffix), buf.Bytes())
 }
 
 // createNodeIndex creates an index for the share node with the given node type and node info.
 func (d *ShareNodeDao) createNodeIndex(node types.RuleNode, nodeType string) {
 	nodeID := node.Id
-	// 更新索引
+	// Update the index
 	meta := RuleMeta{
 		Name:       node.Name,
 		ID:         nodeID,
@@ -205,7 +205,7 @@ func (d *ShareNodeDao) createNodeIndex(node types.RuleNode, nodeType string) {
 // createEndpointIndex creates an index for the share node with the given node type and node info.
 func (d *ShareNodeDao) createEndpointIndex(node types.EndpointDsl, nodeType string) {
 	nodeID := node.Id
-	// 更新索引
+	// Update the index
 	meta := RuleMeta{
 		Name:       node.Name,
 		ID:         nodeID,
@@ -298,7 +298,7 @@ func (d *ShareNodeDao) ListNode(keywords string, page int, size int, nodeType st
 	totalCount := 0
 	indexList := d.getAllIndex(nodeType)
 
-	// 遍历索引中的元数据
+	// Traverse metadata in the index
 	for idx := range indexList {
 		meta := indexList[idx]
 		if keywords == "" || strings.Contains(meta.Name, keywords) || strings.Contains(meta.ID, keywords) {
@@ -334,7 +334,7 @@ func (d *ShareNodeDao) ListEndpoint(keywords string, page int, size int, nodeTyp
 	totalCount := 0
 	indexList := d.getAllIndex(nodeType)
 
-	// 遍历索引中的元数据
+	// Traverse metadata in the index
 	for idx := range indexList {
 		meta := indexList[idx]
 		if keywords == "" || strings.Contains(meta.Name, keywords) || strings.Contains(meta.ID, keywords) {

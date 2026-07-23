@@ -12,13 +12,13 @@ import { debounce } from 'lodash';
 
 const props = defineProps({
   /**
-   * 节点属性(每个节点必定有的属性)
+   * Node attributes (attributes that every node must have)
    * @type {Object}
-   * @property {Object} formData 表单
-   * @property {string} formData.description 描述
-   * @property {string} formData.title 标题
-   * @property {Object} status 状态
-   * @property {boolean} status.isSelected 是否选中
+   * @property {Object} formData form
+   * @property {string} formData.description description
+   * @property {string} formData.title title
+   * @property {Object} status
+   * @property {boolean} status.isSelected. Whether it is selected
    */
   properties: Object,
   model: Object,
@@ -60,12 +60,12 @@ const showFontSizes = ref(false);
 const editorContainerRef = ref(null);
 
 const fontSizes = [
-  { label: '小', value: '12px' },
-  { label: '中', value: '14px' },
-  { label: '大', value: '16px' },
+  { label: 'Small', value: '12px' },
+  { label: 'Middle', value: '14px' },
+  { label: 'Big', value: '16px' },
 ];
 
-// 动态保存编辑器内容
+// Dynamically save editor content
 const debouncedSave = debounce(function () {
   try {
     if (editor.value) {
@@ -79,13 +79,13 @@ const debouncedSave = debounce(function () {
       });
     }
   } catch (error) {
-    console.error('保存编辑器内容失败:', error);
+    console.error('Editor content save failure:', error);
   }
 }, 300);
 
 onMounted(() => {
   editor.value = new Editor({
-    // 重载编辑器
+    // Reload the editor
     content: props.properties.formData.description || '',
     extensions: [
       StarterKit.configure({
@@ -136,7 +136,7 @@ function setFontSize(size) {
 }
 
 function setLink() {
-  const url = window.prompt('请输入链接地址：');
+  const url = window.prompt('Please enter the link address:');
   if (url) {
     editor.value?.chain().focus().setLink({ href: url }).run();
   }
@@ -158,7 +158,7 @@ function handleClickOutside(event) {
     <div class="comment-node">
       <div class="toolbar">
         <div class="flex-toolbar">
-          <!-- 字体大小按钮 -->
+          <!-- Font size button -->
           <div class="font-size-dropdown">
             <button class="toolbar-btn" @click="showFontSizes = !showFontSizes">
               <svg
@@ -185,7 +185,7 @@ function handleClickOutside(event) {
             </div>
           </div>
 
-          <!-- 加粗按钮 -->
+          <!-- Bold buttons -->
           <button
             class="toolbar-btn"
             :class="{ active: editor?.isActive('bold') }"
@@ -207,7 +207,7 @@ function handleClickOutside(event) {
             </svg>
           </button>
 
-          <!-- 斜体按钮 -->
+          <!-- Italic button -->
           <button
             class="toolbar-btn"
             :class="{ active: editor?.isActive('italic') }"
@@ -230,7 +230,7 @@ function handleClickOutside(event) {
             </svg>
           </button>
 
-          <!-- 删除线按钮 -->
+          <!-- Strikethrough button -->
           <button
             class="toolbar-btn"
             :class="{ active: editor?.isActive('strike') }"
@@ -254,7 +254,7 @@ function handleClickOutside(event) {
             </svg>
           </button>
 
-          <!-- 链接按钮 -->
+          <!-- Link button -->
           <button
             class="toolbar-btn"
             :class="{ active: editor?.isActive('link') }"
@@ -280,7 +280,7 @@ function handleClickOutside(event) {
             </svg>
           </button>
 
-          <!-- 列表按钮 -->
+          <!-- List button -->
           <button
             class="toolbar-btn"
             :class="{ active: editor?.isActive('bulletList') }"

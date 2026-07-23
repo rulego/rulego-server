@@ -50,19 +50,19 @@ class VueHtmlNode extends HtmlNode {
 class VueHtmlNodeModel extends HtmlNodeModel {
   initNodeData(data) {
     super.initNodeData(data);
-    this.text.draggable = false; // 不允许文本被拖动
-    this.text.editable = false; // 不允许文本被编辑
-    this.resizable = false; //不允许缩放
+    this.text.draggable = false; // Text cannot be dragged
+    this.text.editable = false; // Text cannot be edited
+    this.resizable = false; // Resizing is disabled
 
     const inputOnlyAsTarget = {
-      message: '只能连接输入锚点',
+      message: 'Only the input anchor point can be connected',
       validate: (sourceNode, targetNode, sourceAnchor, targetAnchor) => {
         const data = sourceNode.graphModel;
         return targetAnchor.type === 'input';
       },
     };
     const oneOnlyAsSource = {
-      message: '每个锚点只能连接一个节点',
+      message: 'Each anchor point can only connect to one node',
       validate: (sourceNode, targetNode, sourceAnchor, targetAnchor) => {
         const outgoingEdgesSourceAnchorId = sourceNode.outgoing.edges.map(
           (item) => item.sourceAnchorId,
