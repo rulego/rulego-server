@@ -20,7 +20,7 @@ const emit = defineEmits(['update:modelValue']);
 const { formItem } = useFormItem();
 const formRef = ref();
 const dialogVisible = ref(false);
-const dialogTitle = ref('新增路由');
+const dialogTitle = ref('Add Route');
 const dataList = computed({
   get: () => {
     return props.modelValue;
@@ -34,12 +34,12 @@ const formState = ref({
 });
 const rules = {
   path: [
-    { required: true, message: '路由不能为空', trigger: 'blur' },
-    // 不能重复
+    { required: true, message: 'Route is required', trigger: 'blur' },
+    // It cannot be repeated
     {
       validator: (_, value, callback) => {
         if (dataList.value.some((item) => item === value)) {
-          callback(new Error('路由名称重复'));
+          callback(new Error('Route name already exists'));
         } else {
           callback();
         }
@@ -50,18 +50,18 @@ const rules = {
 };
 
 function addRouteHandler() {
-  dialogTitle.value = '新增路由';
+  dialogTitle.value = 'Add Route';
   openDialog();
 }
 
 function deleteHandler(item) {
   ElMessageBox({
-    title: '提示',
-    message: `确定要删除[${item}]吗?`,
+    title: 'Notice',
+    message: `Are you sure you want to delete [${item}]?`,
     type: 'warning',
     showCancelButton: true,
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+    confirmButtonText: 'Confirm',
+    cancelButtonText: 'Cancel',
   })
     .then(() => {
       const index = dataList.value.findIndex((i) => i === item);
@@ -92,7 +92,7 @@ async function addRouteSubmitHandler() {
       formItem?.validate?.('change');
     });
   } catch (error) {
-    ElMessage.error('表单验证失败');
+    ElMessage.error('Form validation failed');
   }
 }
 
@@ -106,13 +106,13 @@ watch(
 
 <template>
   <div class="relative w-full">
-    <div class="font-semibold">路由设置</div>
+    <div class="font-semibold">Routing setup</div>
     <div>
       <div
         class="mb-2 rounded border border-solid border-gray-200 p-2 text-center text-gray-400 last:mb-0"
         v-if="dataList.length === 0"
       >
-        无路由
+        There is no path
       </div>
       <div
         class="mb-2 rounded border border-solid border-gray-200 p-2 last:mb-0"
@@ -121,10 +121,10 @@ watch(
       >
         <div>
           <div class="flex items-center justify-between">
-            <div class="text-gray-400">路由名称：</div>
+            <div class="text-gray-400">Route name:</div>
             <div class="flex-none">
               <el-button type="danger" :link="true" @click="deleteHandler(item)"
-                >删除</el-button
+                >Delete</el-button
               >
             </div>
           </div>
@@ -134,12 +134,12 @@ watch(
     </div>
     <div class="pt-2">
       <el-button type="primary" class="w-full" @click="addRouteHandler"
-        >添加路由</el-button
+        >Add Route</el-button
       >
     </div>
     <el-dialog
       v-model="dialogVisible"
-      title="添加路由"
+      title="Add Route"
       width="500"
       :close-on-click-modal="false"
       :append-to-body="true"
@@ -150,15 +150,18 @@ watch(
         :rules="rules"
         label-position="top"
       >
-        <el-form-item label="路由名称" prop="path">
-          <el-input v-model="formState.path" placeholder="路由名称"></el-input>
+        <el-form-item label="Route Name" prop="path">
+          <el-input
+            v-model="formState.path"
+            placeholder="Route Name"
+          ></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <div>
-          <el-button @click="closeDialog">取消</el-button>
+          <el-button @click="closeDialog">Cancel</el-button>
           <el-button type="primary" @click="addRouteSubmitHandler"
-            >确认</el-button
+            >Confirm</el-button
           >
         </div>
       </template>

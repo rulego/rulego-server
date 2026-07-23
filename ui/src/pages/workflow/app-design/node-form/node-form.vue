@@ -78,8 +78,8 @@ defineExpose({
         >
           <div class="px-2">
             <el-tabs v-model="tabActiveName">
-              <el-tab-pane label="配置" name="config"></el-tab-pane>
-              <el-tab-pane label="调试日志" name="log"></el-tab-pane>
+              <el-tab-pane label="Configuration" name="config"></el-tab-pane>
+              <el-tab-pane label="Debugging log" name="log"></el-tab-pane>
             </el-tabs>
           </div>
         </div>

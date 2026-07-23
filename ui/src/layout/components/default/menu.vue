@@ -33,43 +33,46 @@ onMounted(() => {
         @close="handleClose"
         @select="handleSelect"
       >
-        <el-menu-item-group title="工作台">
+        <el-menu-item-group title="Workspace">
           <el-menu-item index="workflow-list">
             <el-icon><el-icon-menu /></el-icon>
-            <span>我的应用</span>
+            <span>My Applications</span>
           </el-menu-item>
-          <el-menu-item index="runs" @click="ElMessage.error('功能暂未实现')">
+          <el-menu-item
+            index="runs"
+            @click="ElMessage.error('This feature is not implemented yet')"
+          >
             <el-icon><el-icon-video-play /></el-icon>
-            <span>运行日志</span>
+            <span>Run Logs</span>
           </el-menu-item>
         </el-menu-item-group>
-        <el-menu-item-group title="应用市场">
+        <el-menu-item-group title="Application Marketplace">
           <el-menu-item
             index="app-market"
-            @click="ElMessage.error('功能暂未实现')"
+            @click="ElMessage.error('This feature is not implemented yet')"
           >
             <el-icon><el-icon-box /></el-icon>
-            <span>应用市场</span>
+            <span>Application Marketplace</span>
           </el-menu-item>
         </el-menu-item-group>
-        <el-menu-item-group title="管理">
+        <el-menu-item-group title="Administration">
           <el-menu-item index="share-node-list">
             <el-icon><el-icon-connection /></el-icon>
-            <span>授权配置</span>
+            <span>Authorization</span>
           </el-menu-item>
           <el-menu-item
             index="node-manage"
-            @click="ElMessage.error('功能暂未实现')"
+            @click="ElMessage.error('This feature is not implemented yet')"
           >
             <el-icon><el-icon-suitcase /></el-icon>
-            <span>组件管理</span>
+            <span>Component Management</span>
           </el-menu-item>
           <el-menu-item
             index="system-manage"
-            @click="ElMessage.error('功能暂未实现')"
+            @click="ElMessage.error('This feature is not implemented yet')"
           >
             <el-icon><el-icon-setting /></el-icon>
-            <span>系统管理</span>
+            <span>System Management</span>
           </el-menu-item>
         </el-menu-item-group>
       </el-menu>

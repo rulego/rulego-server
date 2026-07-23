@@ -90,7 +90,7 @@ func (s *ShareNodeService) Load(ruleConfig *types.Config) error {
 			}
 
 			fileName := entry.Name()
-			// 或使用 filepath.Ext(fileName) == ".json"
+			// Or use filepath.Ext(fileName) == ".json"
 			if strings.HasSuffix(fileName, ".json") {
 				names = append(names, fileName)
 			}

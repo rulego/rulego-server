@@ -27,7 +27,7 @@ import NodeForm from '@src/pages/workflow/app-design/node-form/node-form.vue';
 
 /**
  * remark:ReversalMinute
- * 以数据驱动的方式进行控制
+ * Control is carried out in a data-driven manner
  */
 const props = defineProps({
   /**
@@ -73,21 +73,21 @@ const edges = ref([]);
 const formData = ref({});
 const fields = ref({
   // name: {
-  //   label: '姓名',
+  //   label: 'Name',
   //   component: 'input',
   //   componentProps: {
   //     type: 'textarea',
-  //     placeholder: '请输入您的大名',
+  //     placeholder: 'Please enter your full name',
   //   },
-  //   rules: [{ required: true, message: '姓名不能为空' }],
+  //   rules: [{ required: true, message: 'Name cannot be empty' }],
   // },
   // age: {
-  //   label: '年龄',
+  //   label: 'Age',
   //   component: 'number',
   //   disabled: () => !formData.value.name,
   // },
   // sex: {
-  //   label: '性别',
+  //   label: 'Gender',
   //   component: 'select',
   //   hidden: () => !formData.value.name,
   // },
@@ -117,15 +117,15 @@ function generateStartMenuItem() {
   return {
     start: {
       background: '#ffffff',
-      label: '开始',
+      label: 'Start',
       nodeType: 'simple-node',
       components: [
         {
           type: 'start',
           category: 'start',
           fields: null,
-          label: '开始',
-          desc: '开始节点。',
+          label: 'Start',
+          desc: 'Start node.',
           icon: '/images/comment.svg',
           background: '#f1928f',
           notInput: true,
@@ -140,7 +140,7 @@ function generateStartMenuItem() {
 function clearFlowData() {
   if (!flowViewRef.value) return;
 
-  // 清空数据
+  // Clear the data
   nodes.value = [];
   edges.value = [];
   flowViewRef.value.getLf().clearData();
@@ -154,18 +154,18 @@ function rerenderFlowData() {
     menuList.value,
   );
 
-  // 更新本地数据，就像generateFlowData一样
+  // Update local data, just like generateFlowData
   nodes.value = newNodes;
   edges.value = newEdges;
-  
-  // 使用与generateFlowData相同的渲染方法
+
+  // Use the same rendering method as generateFlowData
   flowViewRef.value.lfRender();
 }
 
 function generateFlowData() {
   if (!flowViewRef.value) return;
 
-  // 接口请求的数据
+  // Data requested by the interface
   const userData = cloneDeep(props.modelValue);
   const { nodes: tNodes, edges: tEdges } = mapRuleGoModelToFlowDataModel(
     userData,
@@ -343,8 +343,8 @@ function showNodeMenuHandler(clientX, clientY) {
 }
 
 /**
- * 获取逻辑流模型
- * @returns {{nodes: Array, edges: Array}} 返回逻辑流模型对象，其中包含节点数组和边数组
+ * Obtain the logical flow model
+ * @returns {{nodes: Array, edges: Array}} Returns logical flow model objects, which include node arrays and edge arrays
  */
 function getData() {
   if (!flowViewRef.value) {
@@ -360,7 +360,7 @@ closeNodeFormBus.on(nodeFormCloseHandler);
 showNodeMenuBus.on(showNodeMenuHandler);
 
 /**
- * 派发更新事件
+ * Distribute update events
  */
 function handleEmitUpdate() {
   const logicFlowData = getData();
@@ -380,12 +380,12 @@ useResizeObserver(containerRef, (entries) => {
 });
 
 function handleKeyDown(e) {
-  // 只在编辑状态且有选中节点时处理
+  // Processes only when edited and a selected node is present
   if (!flowViewRef.value) return;
 
   if (e.key === 'Delete') {
     // const selectedNode = flowViewRef.value.getSelectedNode();
-    // 不删除start节点或endpoint节点
+    // Do not delete the start node or endpoint node
     // if (
     //   selectedNode.type === 'start' ||
     //   isEndpointNode(selectedNode.type, selectedNode.properties?.rawNodeType)
@@ -396,7 +396,7 @@ function handleKeyDown(e) {
     // flowViewRef.value.deleteNode(flowViewRef.value.selectedNodeId);
   }
 }
-//删除选中的节点或者边
+//Delete the selected node or edge
 const deleteSelects = () => {
   const { nodes, edges } = flowViewRef.value.getLf().getSelectElements();
   if (edges) {
@@ -418,7 +418,7 @@ const deleteSelects = () => {
 function handleAddComment({ x, y }) {
   if (!flowViewRef.value) return;
 
-  // 获取Comment组件配置
+  // Obtain the Comment component configuration
   const item = locales.component.nodes.comment;
 
   let form = generateFormData(item);
@@ -468,7 +468,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown);
-  handleEmitUpdate(); // 组件卸载时触发更新事件
+  handleEmitUpdate(); // Emit an update when the component is unmounted
 });
 
 defineExpose({

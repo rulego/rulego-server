@@ -1,9 +1,9 @@
 // Package utils provides various utility functions for working with arrays.
 package utils
 
-// InArray 判断字符串是否在切片中（区分大小写）
-// 线性遍历（适合小数据量）
-// 时间复杂度O(n),空间复杂度O(1)
+// InArray checks whether a string is in the slice (case-sensitive)
+// Linear traversal (suitable for small data volumes)
+// Time complexity O(n), spatial complexity O(1)
 func InArray(target string, arr []string) bool {
 	for idx := range arr {
 		if arr[idx] == target {

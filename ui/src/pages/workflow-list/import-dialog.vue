@@ -26,14 +26,16 @@
           :limit="1"
           accept=".json"
         >
-          <el-button type="default">导入规则链DSL文件</el-button>
+          <el-button type="default">Import the rule chain DSL file</el-button>
         </el-upload>
       </el-form-item>
       <el-row style="width: 100%">
-        <el-col :span="18"><label>在下方粘贴规则链DSL</label></el-col>
+        <el-col :span="18"
+          ><label>Paste the Rule Chain DSL below</label></el-col
+        >
         <el-col :span="6" style="text-align: right">
           <el-button type="info" size="small" round @click="formatCode"
-            >整理</el-button
+            >Organize</el-button
           >
           <el-button
             :icon="isFullscreen ? BottomLeft : FullScreen"
@@ -47,7 +49,7 @@
         <div ref="codeEditorRef" style="width: 100%">
           <codemirror
             v-model="form.data"
-            placeholder="请粘贴规则链DSL"
+            placeholder="Please paste the rule chain DSL"
             :style="{ height: codeEditorHeight, width: '100%' }"
             :autofocus="true"
             :tabSize="2"
@@ -59,9 +61,9 @@
     <template #footer>
       <div style="flex: auto; text-align: right">
         <el-button type="primary" size="large" @click="handleSubmit"
-          >导入</el-button
+          >Introduction</el-button
         >
-        <el-button size="large" @click="handleClose">取消</el-button>
+        <el-button size="large" @click="handleClose">Cancel</el-button>
       </div>
     </template>
   </el-dialog>
@@ -83,7 +85,7 @@ const extensions = [json()];
 
 const emit = defineEmits(['submit', 'close', 'success']);
 
-//表单引用
+//Form reference
 const formRef = ref();
 const fileList = ref();
 const isFullscreen = ref(false);
@@ -95,9 +97,9 @@ const form = reactive({
 });
 
 function handleChange(file, fileList) {
-  // 清空之前的文件列表
+  // Clear the previous file list
   fileList.value = fileList;
-  // 读取文件内容
+  // Read the file content
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
@@ -110,7 +112,7 @@ function handleChange(file, fileList) {
 }
 
 function handleBeforeUpload(file) {
-  // 禁用默认上传行为
+  // Disable default upload behavior
   return false;
 }
 
@@ -121,14 +123,14 @@ async function importHandler() {
   try {
     let ruleChain = JSON.parse(form.data);
     if (!ruleChain.ruleChain.id) {
-      ElMessage.error('规则链ID不能为空');
+      ElMessage.error('The rule chain ID cannot be empty');
       return;
     }
     await Api.setRules(ruleChain.ruleChain.id, form.data);
-    ElMessage.success('导入成功');
+    ElMessage.success('Successful implementation');
     emit('success', ruleChain.ruleChain.id);
   } catch (error) {
-    ElMessage.error('错误:' + error);
+    ElMessage.error('Error:' + error);
   } finally {
     close();
   }
@@ -138,23 +140,23 @@ const handleClose = () => {
   close();
   emit('close');
 };
-//格式化js代码
+//Formatting JS code
 const formatCode = function () {
   form.data = beautify.js(form.data, { indent_size: 2 });
 };
-//全屏
+//Full screen
 const toggleFullScreen = () => {
   if (screenfull.isEnabled) {
     if (!screenfull.isFullscreen) {
-      // 请求全屏
+      // Request full screen
       screenfull.request(codeEditorRef.value[0]);
     } else {
-      // 退出全屏
+      // Exiting full screen
       screenfull.exit();
     }
   }
 };
-// 监听全屏变化
+// Monitor full-screen changes
 screenfull.on('change', () => {
   if (!screenfull.isFullscreen) {
     codeEditorHeight.value = '400px';

@@ -1,17 +1,29 @@
 <template>
   <div class="flex flex-col p-4">
-    <el-form :model="gptConfig" :rules="rules" ref="formRef" label-width="7em" class="mb-4">
+    <el-form
+      :model="gptConfig"
+      :rules="rules"
+      ref="formRef"
+      label-width="7em"
+      class="mb-4"
+    >
       <el-form-item label="Base URl" prop="url">
         <el-input placeholder="Base URl" v-model="gptConfig.url" clearable />
       </el-form-item>
       <el-form-item label="Api Key" prop="apiKey">
-        <el-input type="password" placeholder="Api key" v-model="gptConfig.apiKey" show-password clearable />
+        <el-input
+          type="password"
+          placeholder="Api key"
+          v-model="gptConfig.apiKey"
+          show-password
+          clearable
+        />
       </el-form-item>
       <el-form-item label="Model" prop="model">
         <el-input placeholder="Model" v-model="gptConfig.model" clearable />
       </el-form-item>
     </el-form>
-    <BubbleList class="flex-1 " :list="list" max-height="auto" />
+    <BubbleList class="flex-1" :list="list" max-height="auto" />
     <Sender ref="senderRef" v-model="inputMessage" @submit="handleSend" />
   </div>
 </template>
@@ -20,7 +32,10 @@
 import OpenAI from 'openai';
 import { onMounted, reactive, Ref, ref, watch } from 'vue';
 import { BubbleList, Sender } from 'vue-element-plus-x';
-import type { BubbleListItemProps, BubbleListProps } from 'vue-element-plus-x/types/components/BubbleList/types';
+import type {
+  BubbleListItemProps,
+  BubbleListProps,
+} from 'vue-element-plus-x/types/components/BubbleList/types';
 
 const gptConfig = reactive({
   url: 'https://api.deepseek.com',
@@ -49,7 +64,7 @@ type listType = BubbleListItemProps & {
 
 const list: Ref<BubbleListProps<listType>['list']> = ref([]);
 
-// 初始化 OpenAI 实例
+// Initialize the OpenAI instance
 function initOpenAi() {
   openai = new OpenAI({
     baseURL: gptConfig.url,
@@ -58,14 +73,14 @@ function initOpenAi() {
   });
 }
 
-// 处理发送消息
+// Handle sending messages
 async function handleSend(val: string) {
   formRef.value.validate((valid: boolean) => {
     if (!valid) {
       return;
     }
     senderRef.value.clear();
-    // 添加用户消息到列表
+    // Add user messages to the list
     list.value.push({
       key: list.value.length + 1,
       role: 'user',
@@ -80,7 +95,7 @@ async function handleSend(val: string) {
       avatarSize: '24px',
     });
 
-    // 调用 OpenAI 接口
+    // Call the OpenAI interface
     openai.chat.completions
       .create({
         messages: [
@@ -92,7 +107,7 @@ async function handleSend(val: string) {
         model: gptConfig.model,
       })
       .then((response) => {
-        // 添加 AI 回复到列表
+        // Add AI replies to the list
         list.value.push({
           key: list.value.length + 1,
           role: 'ai',
@@ -103,23 +118,24 @@ async function handleSend(val: string) {
           variant: 'filled',
           isMarkdown: true,
           typing: false,
-          avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+          avatar:
+            'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
           avatarSize: '24px',
         });
       });
   });
 }
 
-// 监听配置变化并重新初始化 OpenAI
+// Monitoring configuration changes and reinitializing OpenAI
 watch(
-  () => [gptConfig.apiKey, gptConfig.url,gptConfig.model],
+  () => [gptConfig.apiKey, gptConfig.url, gptConfig.model],
   () => {
     initOpenAi();
     localStorage.setItem('gptConfig', JSON.stringify(gptConfig));
-  }
+  },
 );
 
-// 初始化时调用
+// Called during initialization
 onMounted(() => {
   const storedConfig = localStorage.getItem('gptConfig');
   if (storedConfig) {

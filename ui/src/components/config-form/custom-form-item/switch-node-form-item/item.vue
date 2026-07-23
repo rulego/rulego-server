@@ -62,7 +62,7 @@ function deleteHandler() {
       class="group relative min-h-[40px] rounded-[10px] px-3 py-1"
       :class="isHover ? 'bg-[#fef3f2]' : 'bg-white'"
     >
-      <!-- 拖拽图标 -->
+      <!-- Drag and drop icons -->
       <!-- <svg
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +94,7 @@ function deleteHandler() {
       ></and-item>
       <div class="flex items-center justify-between pl-[60px] pr-[30px] pt-2">
         <el-button size="small" class="w-full" @click="addAndItemHandler">
-          <span>添加 OR 条件</span>
+          <span>Add OR condition</span>
         </el-button>
       </div>
       <div
@@ -108,7 +108,7 @@ function deleteHandler() {
           @mouseleave="removeMouseleaveHandler"
           @click="deleteHandler"
         >
-          <span>删除 CASE</span>
+          <span>Delete CASE</span>
         </el-button>
       </div>
     </div>

@@ -1,5 +1,5 @@
-# 第一阶段: 构建Go后端
-FROM golang:1.24.1 as backend-builder
+# Stage 1: Build the Go backend
+FROM golang:1.26.5 as backend-builder
 WORKDIR /root
 ADD . /root
 
@@ -7,16 +7,16 @@ RUN mkdir -p bin/ && GOPROXY="https://goproxy.cn,direct"  go build -ldflags '-w 
 
 # RUN go mod download
 
-# 第三阶段: 最终镜像
+# Stage 2: Create the final image
 FROM alpine:3.21.3
 WORKDIR /app
 
 RUN mkdir -p /app/logs
-# 从后端构建阶段复制二进制文件
+# Copy the binary from the backend build stage
 COPY --from=backend-builder /root/bin /app
 COPY --from=backend-builder /root/config.conf /app/config.conf
-# 暴露服务端口
+# Expose the service port
 EXPOSE 9091
 
-# 启动服务
+# Start the service
 CMD ["./server"]

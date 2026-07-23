@@ -1,8 +1,8 @@
 <script lang="js" setup>
 import { ref } from 'vue';
-import zhCn from 'element-plus/es/locale/lang/zh-cn';
+import en from 'element-plus/es/locale/lang/en';
 
-const locale = ref(zhCn);
+const locale = ref(en);
 </script>
 
 <template>

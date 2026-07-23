@@ -4,13 +4,13 @@ import NodeTitle from '@src/pages/workflow/app-design/flow-node/components/node-
 
 const props = defineProps({
   /**
-   * 节点属性(每个节点必定有的属性)
+   * Node attributes (attributes that every node must have)
    * @type {Object}
-   * @property {Object} formData 表单
-   * @property {string} formData.additionalInfo.description 描述
-   * @property {string} formData.additionalInfo.title 标题
-   * @property {Object} status 状态
-   * @property {boolean} status.isSelected 是否选中
+   * @property {Object} formData form
+   * @property {string} formData.additionalInfo.description Description
+   * @property {string} formData.additionalInfo.title title
+   * @property {Object} status
+   * @property {boolean} status.isSelected. Whether it is selected
    */
   properties: Object,
   model: Object,

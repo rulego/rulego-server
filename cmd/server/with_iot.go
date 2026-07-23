@@ -5,8 +5,8 @@ package main
 import (
 	"github.com/rulego/rulego-server/internal/service"
 
-	// 注册扩展组件库
-	// 使用`go build -tags with_iot .`把扩展组件编译到运行文件
+	// Register the Extended Component Library
+	// Use `go build -tags with_iot .` to include the IoT extension components in the executable
 	_ "github.com/rulego/rulego-components-iot/endpoint/opcua"
 	_ "github.com/rulego/rulego-components-iot/external/modbus"
 	_ "github.com/rulego/rulego-components-iot/external/opcua"
@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	// 获取串口列表函数，支持实时获取
+	// Retrieve serial port list function, supports real-time retrieval
 	getSerialPorts := func() interface{} {
 		serialPortsList, _ := serial.GetPortsList()
 		return map[string]interface{}{

@@ -1,29 +1,29 @@
 # rulego-ipaas-ui
 
-## 项目介绍
+## Project Introduction
 
-`rulego-ipaas-ui` 是一个基于 `Vue3`+`Logicflow`+`ElementPlus` rulego-ipaas平台前端，也是一个RuleGo规则链流程编排设计器。
+`rulego-ipaas-ui` is a front-end platform based on `Vue3` + `Logicflow` + `ElementPlus` rulego-ipaas and also a RuleGo rule chain process orchestration designer.
 
-`rulego-ipaas`是一个基于 `RuleGo` 的流程编排iPaaS平台。使用场景：大模型流程编排、智能体编排、动态API网关、API/工具市场、业务编排、异构平台联动、IoT以及边缘计算。
+`rulego-ipaas` is a `RuleGo`-based process orchestration iPaaS platform. Use cases: large model process orchestration, agent orchestration, dynamic API gateways, API/ tool marketplaces, business orchestration, heterogeneous platform integration, IoT, and edge computing.
 
-在线体验地址:[http://8.134.32.225:9090/rulego-ipaas-ui/](http://8.134.32.225:9090/rulego-ipaas-ui/)
+Online experience link: [http://8.134.32.225:9090/rulego-ipaas-ui/](http://8.134.32.225:9090/rulego-ipaas-ui/)
 
-## 项目特性
+## Project Characteristics
 
-- 扩展简单：支持自定义节点和表单，也可以0代码，自动适配后端新增节点组件
-- 完整支持RuleGo-Sever API
-- 技术栈：[Vue3](https://cn.vuejs.org/) + [Logicflow](https://logicflow.antv.antgroup.com/zh/) + [ElementPlus](https://element-plus.org/zh-cn/)
-- 后端：RuleGo
+- Simple extension: supports custom nodes and forms, can also be zero-code, and automatically adapts to new node components added on the backend
+- Full support for RuleGo-Sever API
+- Technology Stack: [Vue3](https://cn.vuejs.org/) + [Logicflow](https://logicflow.antv.antgroup.com/zh/) + [ElementPlus](https://element-plus.org/zh-cn/)
+- Backend: RuleGo
 
-## 后端
+## Backend
 
-后端基于 [RuleGo](https://gitee.com/rulego/rulego) ，后端代码仓库：
+The backend is based on [RuleGo](https://gitee.com/rulego/rulego), and the backend code repository:
 
 - [gitee](https://gitee.com/rulego/rulego/tree/main/examples/server)
 - [github](https://github.com/rulego/rulego/tree/main/examples/server)
-- [aip文档](https://apifox.com/apidoc/shared-d17a63fe-2201-4e37-89fb-f2e8c1cbaf40)
+- [aip Document](https://apifox.com/apidoc/shared-d17a63fe-2201-4e37-89fb-f2e8c1cbaf40)
 
-## 安装/运行
+## Installation/Operation
 
 ```base
 npm install
@@ -31,18 +31,18 @@ npm install
 npm run dev
 ```
 
-## 新增自定义节点
+## Add custom nodes
 
-所有自定义节点存放在 `src\pages\workflow\app-design\flow-node` 目录。
+All custom nodes are stored in the `src\pages\workflow\app-design\flow-node` directory.
 
-复制一份节点代码，更改好名字后，修改 `.js` 文件导出的
-`type` 名字和 `.vue` 文件引入路径即可。
+Copy a node code, change the name, and then modify the export from the `.js` file
+`type` name and `.vue` file to import the path.
 
-例如，现在新建一个名字为 `demo` 的自定义节点：
+For example, now create a custom node named `demo`:
 
-1. 在 `src\pages\workflow\app-design\flow-node` 目录下新建一个 `demo` 文件夹。
+1. Create a new `demo` folder in the `src\pages\workflow\app-design\flow-node` directory.
 
-2. 创建对应的 `.js` 和 `.vue` 文件。
+2. Create the corresponding `.js` and `.vue` files.
 
 ```js
 // demo.js
@@ -98,18 +98,18 @@ class VueHtmlNode extends HtmlNode {
 class VueHtmlNodeModel extends HtmlNodeModel {
   initNodeData(data) {
     super.initNodeData(data);
-    this.text.draggable = false; // 不允许文本被拖动
-    this.text.editable = false; // 不允许文本被编辑
+    this.text.draggable = false; // Text is not allowed to be dragged
+    this.text.editable = false; // Text editing is not allowed
 
     const inputOnlyAsTarget = {
-      message: '只能连接输入锚点',
+      message: 'Can only connect to an input anchor',
       validate: (sourceNode, targetNode, sourceAnchor, targetAnchor) => {
         const data = sourceNode.graphModel;
         return targetAnchor.type === 'input';
       },
     };
     const oneOnlyAsSource = {
-      message: '每个锚点只能连接一个节点',
+      message: 'Each anchor can only connect to one node',
       validate: (sourceNode, targetNode, sourceAnchor, targetAnchor) => {
         const outgoingEdgesSourceAnchorId = sourceNode.outgoing.edges.map(
           (item) => item.sourceAnchorId,
@@ -182,13 +182,13 @@ import DefaultEndpointNode from '@src/pages/workflow/app-design/flow-node/compon
 
 const props = defineProps({
   /**
-   * 节点属性(每个节点必定有的属性)
+   * Node properties (present on every node)
    * @type {Object}
-   * @property {Object} formData 表单
-   * @property {string} formData.description 描述
-   * @property {string} formData.title 标题
-   * @property {Object} status 状态
-   * @property {boolean} status.isSelected 是否选中
+   * @property {Object} formData Form data
+   * @property {string} formData.description Description
+   * @property {string} formData.title Title
+   * @property {Object} status Status
+   * @property {boolean} status.isSelected Whether the node is selected
    */
   properties: Object,
   model: Object,
@@ -203,28 +203,28 @@ const props = defineProps({
 </template>
 ```
 
-`.vue` 文件的内容可以自行调整，入参有 `properties` 和 `model`，来自 `.js` 文件的 `VueHtmlNode` class 下的 `constructor` 传入，可自行扩展。
+`.vue` file content can be adjusted freely, with `properties` and `model` for entry, and `constructor` input from the `VueHtmlNode` class of `.js` file, which can be expanded as desired.
 
-3. 在 `src\pages\workflow\app-design\flow-node\index.js` 文件导出对应的节点。
+3. Export the corresponding node in the `src\pages\workflow\app-design\flow-node\index.js` file.
 
-4. 在 `src\pages\workflow\app-design\constant.js` 文件增加节点映射。
+4. Add node mappings to the `src\pages\workflow\app-design\constant.js` file.
 
-## 新增自定义表单项
+## Added custom form items
 
-节点表单组件在 `src\components\config-form` 目录。
+The node form component is in the `src\components\config-form` directory.
 
-新增自定义表单组件后，只需在 `src\components\config-form\cache.js` 文件增加 `componentMaps` 的映射即可。
+After adding a custom form component, you only need to add the `componentMaps` mapping to the `src\components\config-form\cache.js` file.
 
-## 自动适配新节点
+## Automatic adaptation to new nodes
 
-后端新增节点组件，如果前端找不到自定义的`flow-node`节点，会使用 `src\pages\workflow\app-design\flow-node\dynamic-node` 进行自动适配渲染。
-只需在这个文件`src\constant\node-component-data.js`配置国际化即可。
+A new node component is added on the backend. If the frontend cannot find a custom `flow-node` node, it uses `src\pages\workflow\app-design\flow-node\dynamic-node` for automatic adaptation and rendering.
+Simply configure internationalization in this file `src\constant\node-component-data.js`.
 
-## 贡献
+## Contribution
 
-本项目为社区驱动项目，欢迎任何形式的贡献，包括提交问题、建议、文档、测试或代码。
+This project is community-driven and welcomes contributions of any form, including submitted questions, suggestions, documentation, tests, or code.
 
-## 授权
+## Authorization
 
-如果商业使用，请先联系作者。欢迎使用RuleGo团队开发的另外一个规则链编辑器[RuleGo-Editor](https://app.rulego.cc/)
-体验地址：[http://8.134.32.225:9090/editor/](http://8.134.32.225:9090/editor/)
+For commercial use, please contact the author first. Welcome to the RuleGo team's other rule chain editor [RuleGo-Editor](https://app.rulego.cc/)
+Experience link: [http://8.134.32.225:9090/editor/](http://8.134.32.225:9090/editor/)

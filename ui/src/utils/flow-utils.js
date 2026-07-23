@@ -1,7 +1,7 @@
 import { locales } from '@src/constant/node-component-data';
 import { nanoid } from 'nanoid';
 
-//国际化函数
+//Internationalization function
 export const $t = (key, parentKey) => {
   if (key && parentKey) {
     let locale = locales[parentKey];
@@ -13,7 +13,7 @@ export const $t = (key, parentKey) => {
   }
   return key;
 };
-/* 求字符串的字节长度 */
+/* Find the byte length of the string */
 export const getBytesLength = (word) => {
   if (!word) {
     return 0;
@@ -32,27 +32,27 @@ export const getBytesLength = (word) => {
   return totalLength;
 };
 
-//默认组件适配器，增加中文label、背景颜色、分组和表单校验
+// Default component adapter that adds labels, background colors, grouping, and form validation
 const adapterComponents = (componets, customLocales) => {
-  //合并自定义国际化
+  //Merged custom internationalization
   deepAssign(locales, customLocales);
-  //深度拷贝
+  //Deep copy
   let nodeGroups = JSON.parse(JSON.stringify(locales.category));
-  //处理endpoint组件
+  //Handle endpoint components
   if (componets.endpoints) {
     componets.endpoints.forEach((item) => {
       adapterItem(componets.builtins, nodeGroups, item, true);
     });
   }
   if (!componets.nodes) {
-    //兼容旧版本
+    //Compatible with older versions
     componets.nodes = componets;
   }
-  //处理节点组件
+  //Processing node components
   componets.nodes.forEach((item) => {
     adapterItem(componets.builtins, nodeGroups, item, false);
   });
-  //删除空分组
+  //Delete empty groups
   for (let key in nodeGroups) {
     let value = nodeGroups[key];
     if (
@@ -100,7 +100,7 @@ const adapterItem = (builtins, nodeGroups, item, isEndpoint) => {
     item.nodeType || (category && category.nodeType) || 'simple-node';
 };
 
-//国际化
+//Internationalization
 const adapterComponentsLocal = (component, isEndpoint) => {
   let localComponent = {};
   if (isEndpoint) {
@@ -126,7 +126,7 @@ const adapterComponentsLocal = (component, isEndpoint) => {
   }
   if (isEndpoint) {
     component.router = component.router || {};
-    //endpoint节点默认不显示输入端点
+    //By default, the endpoint node does not display the input endpoint
     if (!component.hasOwnProperty('notInput')) {
       component.notInput = true;
     }
@@ -167,17 +167,20 @@ const adapterRules = (component) => {
   if (component.fields) {
     component.fields.forEach((item) => {
       if (item.type.indexOf('int') > -1 && !item.rules) {
-        item.rules = [{ type: 'number', message: '必须是数值类型' }];
+        item.rules = [{ type: 'number', message: 'Must be a numeric value' }];
       } else if (item.type.indexOf('float') > -1 && !item.rules) {
         item.rules = [
-          { pattern: /^-?\d+(\.\d+)?$/, message: '必须是浮点类型' },
+          {
+            pattern: /^-?\d+(\.\d+)?$/,
+            message: 'Must be a floating-point value',
+          },
         ];
       }
     });
   }
 };
 
-//通过id查找节点
+//Find nodes by ID
 const getNodeByID = (nodes, id) => {
   let node = {};
   if (nodes) {
@@ -190,7 +193,7 @@ const getNodeByID = (nodes, id) => {
   return node;
 };
 
-//通过源Id和目标Id查找边
+//Searches for edges using the source Id and Destination Id
 const getEdgeBySourceNodeIdAndTargetNodeId = (
   edges,
   sourceNodeId,
@@ -210,7 +213,7 @@ const getEdgeBySourceNodeIdAndTargetNodeId = (
   return edge;
 };
 
-//创建边
+//Create an edge
 const createEdge = (initData, nodes, item) => {
   let edge = {
     id: 'edge_' + initData.edgeCount,
@@ -237,7 +240,7 @@ const createEdge = (initData, nodes, item) => {
   return edge;
 };
 
-//获取node序号
+//Obtain the node serial number
 const getNodeSeq = (nodeId) => {
   let values = nodeId.split('_');
   if (values.length > 0) {
@@ -246,7 +249,7 @@ const getNodeSeq = (nodeId) => {
   }
 };
 
-//获取还没被选择的路由选项列表
+//Get a list of routing options that have not yet been selected
 const getRelationTypeOptionsFromRouters = (edges, nodeModel, currentEdgeId) => {
   let selectedRouterId = {};
   edges.forEach((edgeModel) => {
@@ -270,7 +273,7 @@ const getRelationTypeOptionsFromRouters = (edges, nodeModel, currentEdgeId) => {
   return options;
 };
 
-//动态获取连接类型
+//Dynamically obtain connection types
 const getRelationTypeOptionsFromNode = (nodeView, nodeModel) => {
   let options = [];
   if (nodeView.type === 'switch') {
@@ -280,12 +283,12 @@ const getRelationTypeOptionsFromNode = (nodeView, nodeModel) => {
       });
     }
     options.push({ label: 'Default', value: 'Default' });
-    options.push({ label: '失败', value: 'Failure' });
+    options.push({ label: 'Failure', value: 'Failure' });
   }
   return options;
 };
 
-//获取router id获取连接类型label
+//Get the router ID and get the connection type label
 const getRouterRelationTypeLabel = (nodeModel, routerId) => {
   let labels = [];
   if (nodeModel.routers) {
@@ -307,7 +310,7 @@ const getEndpointConnections = (fromId, endpointModel, firstNode) => {
   if (endpointModel.routers && endpointModel.routers.length > 0) {
     endpointModel.routers.forEach((item) => {
       if (item.to && item.to.path) {
-        //格式:chainId:nodeId1:nodeId2:nodeId3
+        //Format: chainId: nodeId1: nodeId2: nodeId3
         let values = item.to.path.split(':');
         let path = toFromPath(item);
         if (values.length <= 1) {
@@ -319,7 +322,7 @@ const getEndpointConnections = (fromId, endpointModel, firstNode) => {
             type: path,
           });
         } else {
-          //从1开始遍历节点ID
+          //Starting from 1, traverse the node ID
           for (let i = 1; i < values.length; i++) {
             connections.push({
               fromId: fromId,
@@ -370,7 +373,7 @@ const toFromPath = (item) => {
   return params + ' ' + (item.from && item.from.path);
 };
 
-//生成唯一ID
+//Generate a unique ID
 const genId = (size) => {
   if (size) {
     return nanoid(size);
@@ -379,9 +382,9 @@ const genId = (size) => {
   }
 };
 
-//格式化内置函数
+//Format built-in functions
 const adapterBuiltins = (builtins, nodeItem, categoryName) => {
-  //处理endpoint路由前置处理器和后置处理器下拉选项
+  //Handle endpoint routing dropdown options for preprocessor and postprocessor
   if (categoryName === 'endpoints') {
     let endpointsBuiltins = builtins['endpoints'];
     if (endpointsBuiltins && nodeItem.router) {
@@ -391,7 +394,7 @@ const adapterBuiltins = (builtins, nodeItem, categoryName) => {
       });
     }
   }
-  //处理节点共享池下拉选项
+  //Handles the dropdown option for node shared pools
   let currentNodeTypeNodePool =
     builtins.nodePool && builtins.nodePool[nodeItem.type];
   if (currentNodeTypeNodePool) {
@@ -405,7 +408,7 @@ const adapterBuiltins = (builtins, nodeItem, categoryName) => {
     }
   }
 
-  //处理其他
+  //Handling others
   Object.keys(builtins).forEach((key) => {
     if (nodeItem.type === key) {
       if (nodeItem.fields) {
@@ -420,18 +423,18 @@ const adapterBuiltins = (builtins, nodeItem, categoryName) => {
   });
 };
 
-// nodeDef结构
+// nodeDef structure
 // [{
 //     "id": "my_mqtt_client01",
 //     "type": "mqttClient",
-//     "name": "mqtt推送数据",
+//     "name": "MQTT pushes data",
 //     "debugMode": false,
 //     "configuration": {
 //     "Server": "127.0.0.1:1883",
 //         "Topic": "/device/msg"
 // }
 // }]
-//options value 根据rulego共享组件协议，需要在前面增加ref://
+//Options value is added at the beginning according to the rulego Shared Component Protocol ref://
 function toNodePoolOptions(nodeDef) {
   let options = [];
   if (nodeDef) {
@@ -445,7 +448,7 @@ function toNodePoolOptions(nodeDef) {
   return options;
 }
 
-//深度合并
+//Deep merger
 function deepAssign(target, ...sources) {
   if (target == null) {
     throw new TypeError('Cannot convert undefined or null to object');
@@ -481,7 +484,7 @@ const getSelectedLabels = (options, selectedValues, optionsType) => {
     .filter((label) => label !== undefined);
 };
 
-//复制到剪切板
+//Copy to clipboard
 const copyToClipboard = (text) => {
   return new Promise((resolve, reject) => {
     if (navigator.clipboard && window.isSecureContext) {
@@ -490,7 +493,7 @@ const copyToClipboard = (text) => {
         .then(() => resolve(true))
         .catch((err) => reject(err));
     } else {
-      // 如果不是安全上下文，使用旧的execCommand方法
+      // If not in a secure context, use the old execCommand method
       const textArea = document.createElement('textarea');
       textArea.value = text;
       document.body.appendChild(textArea);
@@ -514,28 +517,28 @@ const copyToClipboard = (text) => {
 
 const readFromClipboard = () => {
   return new Promise((resolve, reject) => {
-    // 尝试使用 Clipboard API 读取剪贴板内容
+    // Try using the Clipboard API to read clipboard contents
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard
         .readText()
         .then((text) => resolve(text))
         .catch((err) => {
-          // 如果 Clipboard API 读取失败，尝试使用 execCommand
+          // If the Clipboard API fails to read, try using execCommand
           fallbackReadClipboard().then(resolve, reject);
         });
     } else {
-      // 如果不支持 Clipboard API，使用 execCommand 作为后备方案
+      // If the Clipboard API is not supported, use execCommand as a backup solution
       fallbackReadClipboard().then(resolve, reject);
     }
   });
 };
 
-// 后备方案：使用 document.execCommand('paste') 读取剪贴板内容
+// Backup solution: Use document.execCommand('paste') to read clipboard contents
 function fallbackReadClipboard() {
   return new Promise((resolve, reject) => {
     let text = '';
     const textarea = document.createElement('textarea');
-    textarea.style.position = 'fixed'; // 防止在页面上显示
+    textarea.style.position = 'fixed'; // Prevent it from being displayed on the page
     textarea.style.opacity = '0';
     document.body.appendChild(textarea);
     textarea.focus();
@@ -560,9 +563,9 @@ function isNumeric(str) {
   return !isNaN(str) && !isNaN(parseFloat(str));
 }
 
-// 操作符映射表
+// Operator mapping table
 const OPERATOR_MAP = {
-  // 数值比较操作符
+  // Numeric comparison operator
   '==': function (field, value) {
     if (value === '' || isNumeric(value)) {
       return `${field}==${value}`;
@@ -589,7 +592,7 @@ const OPERATOR_MAP = {
   '<=': function (field, value) {
     return `${field}<=${value}`;
   },
-  // 字符串比较操作符
+  // String comparison operator
   equal: function (field, value) {
     return `${field}=="${value}"`;
   },
@@ -608,7 +611,7 @@ const OPERATOR_MAP = {
   endsWith: function (field, value) {
     return `${field} endsWith "${value}")`;
   },
-  // 空值判断操作符
+  // Null check operator
   null: function (field, value) {
     return `${field} == nil`;
   },
@@ -618,9 +621,9 @@ const OPERATOR_MAP = {
 };
 
 /**
- * 将JSON数组转换为表达式字符串
- * 示例:
- * 输入:
+ * Convert a JSON array to an expression string.
+ * Example:
+ * Input:
  * [
  *   [
  *     {
@@ -643,34 +646,34 @@ const OPERATOR_MAP = {
  *   ]
  * ]
  *
- * 输出:
+ * Output:
  * (msg.name=="aa" && msg.age>18) || msg.name==10"
  *
- * @param {Array} jsonArray - JSON条件数组
- * @returns {string} 转换后的表达式字符串
+ * @param {Array} jsonArray - JSON condition array
+ * @returns {string} Converted expression string
  */
 function json2expr(jsonArray) {
   if (!Array.isArray(jsonArray) || jsonArray.length === 0) {
     return '';
   }
 
-  // 处理外层OR关系
+  // Handle the outer OR relationship
   const orExpressions = jsonArray.map((andArray) => {
     if (!Array.isArray(andArray)) return '';
 
-    // 处理内层AND关系
+    // Handle the inner AND relationship
     const andExpressions = andArray.map((condition) => {
       const { field, operator, value } = condition;
       return OPERATOR_MAP[operator] ? OPERATOR_MAP[operator](field, value) : '';
     });
 
-    // 将AND表达式组合起来
+    // Combine the AND expressions
     return andExpressions.length > 1
       ? `(${andExpressions.join(' && ')})`
       : andExpressions[0];
   });
 
-  // 将OR表达式组合起来
+  // Combine the OR expressions
   return orExpressions.join(' || ');
 }
 
@@ -678,23 +681,23 @@ function expr2json(expr) {
   // expr = expr.replace(/\s+/g, '');
   expr = expr.trim();
 
-  // 分割OR表达式
+  // Split the OR expression
   const orParts = expr.split('||');
 
   return orParts.map((orPart) => {
-    // 移除外层括号
+    // Remove the outer parentheses
     orPart = orPart.replace(/^\(|\)$/g, '');
 
-    // 分割AND表达式
+    // Split the AND expression
     const andParts = orPart.split('&&');
 
     return andParts.map((condition) => {
       condition = condition.trim();
-      // 解析条件
+      // Parse the condition
       let match;
       if (condition.includes('contains')) {
-        condition += ' '; //适配value没值问题
-        // 处理包含/不包含
+        condition += ' '; // Handle an empty value
+        // Handle contains and does-not-contain operators
         match = condition.match(/(.+)\s+contains\s+"(.+)"/);
         if (!match) {
           return {
@@ -710,12 +713,12 @@ function expr2json(expr) {
           };
         }
       } else if (condition.includes('==') || condition.includes('!=')) {
-        condition += ' '; //适配value没值问题
-        // 处理字符串相等
+        condition += ' '; // Handle an empty value
+        // Handle string equality
         match = condition.match(/(.+)(==|!=)(.+)/);
         if (!match) {
           let isStr = condition.endsWith('"');
-          //处理条件空值问题
+          // Handle an empty condition value
           return {
             field: '',
             operator: isStr
@@ -746,11 +749,11 @@ function expr2json(expr) {
           };
         }
       } else {
-        condition += ' '; //适配value没值问题
-        // 处理普通操作符
+        condition += ' '; // Handle an empty value
+        // Handle ordinary operators
         match = condition.match(/(.+)(==|>=|<=|>|<|startsWith|endsWith)(.+)/);
         if (!match) {
-          //处理条件空值问题
+          // Handle an empty condition value
           return {
             field: '',
             operator: condition,

@@ -101,7 +101,9 @@ onBeforeUnmount(() => {
       ></div>
       <div class="flex-grow pl-[6px]">
         <div class="flex justify-end py-2 pr-2">
-          <el-button size="small" @click="formatCodeHandler">整理</el-button>
+          <el-button size="small" @click="formatCodeHandler"
+            >Organize</el-button
+          >
           <el-button
             size="small"
             @click="toggle"

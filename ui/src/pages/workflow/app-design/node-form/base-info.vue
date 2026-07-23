@@ -28,8 +28,8 @@ const closeNodeFormBus = EventBus.closeNodeForm();
         <input
           v-model="model.additionalInfo.title"
           class="focus:shadow-xs mr-2 h-6 min-w-0 grow appearance-none rounded-lg border border-transparent px-1 text-base font-semibold text-gray-900 caret-[#295EFF] outline-none hover:bg-gray-50 focus:border-gray-300 focus:bg-white"
-          placeholder="添加标题..."
-          value="开始"
+          placeholder="Add a title..."
+          value="Start"
         />
       </div>
       <el-divider class="flex-none" direction="vertical" />
@@ -47,7 +47,7 @@ const closeNodeFormBus = EventBus.closeNodeForm();
         :autosize="{ minRows: 2, maxRows: 2 }"
         resize="none"
         type="textarea"
-        placeholder="添加描述..."
+        placeholder="Add description..."
       />
     </div>
   </div>

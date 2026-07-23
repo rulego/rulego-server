@@ -59,13 +59,13 @@ function closeDialog() {
 }
 
 function showDataHandler(msg) {
-  dialogTitle.value = '数据';
+  dialogTitle.value = 'Data';
   dialogData.value = beautify.js(msg.data, { indent_size: 2 });
   openDialog();
 }
 
 function showMetadataHandler(msg) {
-  dialogTitle.value = '元数据';
+  dialogTitle.value = 'Metadata';
   dialogData.value = beautify.js(JSON.stringify(msg.metadata), {
     indent_size: 2,
   });
@@ -73,7 +73,7 @@ function showMetadataHandler(msg) {
 }
 
 function showErrorHandler(err) {
-  dialogTitle.value = '错误';
+  dialogTitle.value = 'Wrong';
   dialogData.value = err || '';
   openDialog();
 }
@@ -92,19 +92,19 @@ onBeforeMount(() => {
   <div class="px-2">
     <div class="flex justify-end p-2">
       <el-button icon="el-icon-refresh-right" @click="refreshTableData"
-        >刷新</el-button
+        >Refresh</el-button
       >
     </div>
     <div class="h-[300px]">
       <el-table height="100%" size="small" :data="tableData" :border="true">
         <el-table-column
           prop="ts"
-          label="事件时间"
+          label="The timing of the incident"
           width="90"
           :formatter="tsFormatter"
         />
-        <el-table-column prop="flowType" label="类型" width="60" />
-        <el-table-column prop="msg.id" label="消息ID" width="130">
+        <el-table-column prop="flowType" label="Type" width="60" />
+        <el-table-column prop="msg.id" label="Message ID" width="130">
           <template #default="scope">
             <el-tooltip
               effect="dark"
@@ -119,7 +119,7 @@ onBeforeMount(() => {
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="msg.type" label="消息类型" width="130">
+        <el-table-column prop="msg.type" label="Message Type" width="130">
           <template #default="scope">
             <el-tooltip
               effect="dark"
@@ -134,10 +134,14 @@ onBeforeMount(() => {
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="relationType" label="关系类型" width="90" />
-        <el-table-column prop="msg.data" label="数据" width="60" align="center">
+        <el-table-column
+          prop="relationType"
+          label="Types of relationships"
+          width="90"
+        />
+        <el-table-column prop="msg.data" label="Data" width="60" align="center">
           <template #default="scope">
-            <el-tooltip effect="dark" content="查看" placement="top">
+            <el-tooltip effect="dark" content="View" placement="top">
               <el-button
                 icon="el-icon-more-filled"
                 @click="showDataHandler(scope.row.msg)"
@@ -148,12 +152,12 @@ onBeforeMount(() => {
         </el-table-column>
         <el-table-column
           prop="msg.metadata"
-          label="元数据"
+          label="Metadata"
           width="60"
           align="center"
         >
           <template #default="scope">
-            <el-tooltip effect="dark" content="查看" placement="top">
+            <el-tooltip effect="dark" content="View" placement="top">
               <el-button
                 icon="el-icon-more-filled"
                 @click="showMetadataHandler(scope.row.msg)"
@@ -162,12 +166,12 @@ onBeforeMount(() => {
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="err" label="错误" width="80">
+        <el-table-column prop="err" label="Wrong" width="80">
           <template #default="scope">
             <el-tooltip
               v-if="scope.row.err"
               effect="dark"
-              content="查看"
+              content="View"
               placement="top"
             >
               <el-button
@@ -207,7 +211,7 @@ onBeforeMount(() => {
       <json-editor v-model="dialogData"></json-editor>
       <template #footer>
         <div class="flex justify-end">
-          <el-button @click="closeDialog">关闭</el-button>
+          <el-button @click="closeDialog">Close</el-button>
         </div>
       </template>
     </el-dialog>

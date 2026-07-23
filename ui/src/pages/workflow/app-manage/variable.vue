@@ -12,7 +12,7 @@ const emit = defineEmits(['save']);
 
 const formRef = ref();
 const dialogVisible = ref(false);
-const dialogTitle = ref('新增变量');
+const dialogTitle = ref('Add Variable');
 const formState = ref({
   key: '',
   value: '',
@@ -21,28 +21,28 @@ const rules = ref({
   key: [
     {
       required: true,
-      message: '变量名称不能为空',
+      message: 'Variable names cannot be empty',
       trigger: ['blur', 'change'],
     },
-    // 不能以数字开头
+    // You can't start with numbers
     {
       pattern: /^[^\d].*$/,
-      message: '变量名称不能以数字开头',
+      message: 'Variable names cannot start with numbers',
       trigger: ['blur', 'change'],
     },
-    // 只能使用字母、数字、下划线
+    // Only letters, numbers, and underscores are allowed
     {
       pattern: /^[a-zA-Z0-9_]+$/,
-      message: '变量名称只能使用字母、数字、下划线',
+      message: 'Variable names can only use letters, numbers, or underscores',
       trigger: ['blur', 'change'],
     },
-    // 不能重复
+    // It cannot be repeated
     {
       validator: (_, value, callback) => {
         if (isEdit()) {
           callback();
         } else if (props.data.some((item) => item.key === value)) {
-          callback(new Error('变量名称重复'));
+          callback(new Error('Variable names are duplicated'));
         } else {
           callback();
         }
@@ -53,7 +53,7 @@ const rules = ref({
 });
 
 function isEdit() {
-  return dialogTitle.value === '编辑变量';
+  return dialogTitle.value === 'Edit Variable';
 }
 
 function setDialogTitle(title) {
@@ -61,12 +61,12 @@ function setDialogTitle(title) {
 }
 
 function addHandler() {
-  setDialogTitle('新增变量');
+  setDialogTitle('Add Variable');
   open();
 }
 
 function editHandler(key, value) {
-  setDialogTitle('编辑变量');
+  setDialogTitle('Edit Variable');
   formState.value.key = key;
   formState.value.value = value;
   open();
@@ -111,12 +111,12 @@ async function submitHandler() {
 <template>
   <div class="px-4">
     <div class="flex justify-end pb-2">
-      <el-button type="primary" @click="addHandler">新增变量</el-button>
+      <el-button type="primary" @click="addHandler">Add Variable</el-button>
     </div>
     <el-table size="small" :data="props.data" :border="true">
-      <el-table-column prop="key" label="名称" width="180" />
-      <el-table-column prop="value" label="值" />
-      <el-table-column prop="action" label="操作" width="90" align="center">
+      <el-table-column prop="key" label="Name" width="180" />
+      <el-table-column prop="value" label="Value" />
+      <el-table-column prop="action" label="Actions" width="90" align="center">
         <template #default="scope">
           <el-space>
             <el-button
@@ -125,7 +125,7 @@ async function submitHandler() {
               size="small"
               @click.prevent="editHandler(scope.row.key, scope.row.value)"
             >
-              编辑
+              Edit
             </el-button>
             <el-button
               :link="true"
@@ -133,13 +133,13 @@ async function submitHandler() {
               size="small"
               @click.prevent="deleteHandler(scope.row.key)"
             >
-              删除
+              Delete
             </el-button>
           </el-space>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 弹窗表单 -->
+    <!-- Pop-up form -->
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -152,21 +152,24 @@ async function submitHandler() {
         :rules="rules"
         label-position="top"
       >
-        <el-form-item label="变量名称" prop="key">
+        <el-form-item label="Variable Name" prop="key">
           <el-input
             v-model="formState.key"
             :disabled="isEdit()"
-            placeholder="变量名称"
+            placeholder="Variable Name"
           />
         </el-form-item>
-        <el-form-item label="变量值" prop="value">
-          <el-input v-model="formState.value" placeholder="变量值"></el-input>
+        <el-form-item label="Variable Value" prop="value">
+          <el-input
+            v-model="formState.value"
+            placeholder="Variable Value"
+          ></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="close">关闭</el-button>
-          <el-button type="primary" @click="submitHandler">确定</el-button>
+          <el-button @click="close">Close</el-button>
+          <el-button type="primary" @click="submitHandler">Confirm</el-button>
         </div>
       </template>
     </el-dialog>

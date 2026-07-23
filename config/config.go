@@ -24,60 +24,60 @@ func Set(c Config) {
 }
 
 type Config struct {
-	// DataDir 数据目录
+	// DataDir data directory
 	DataDir string `ini:"data_dir" env:"RULEGO_DATA_DIR"`
-	// LogFile 日志文件
+	// LogFile
 	LogFile string `ini:"log_file" env:"RULEGO_LOG_FILE"`
-	// CmdWhiteList shell命令白名单
+	// CmdWhiteList shell commands the whitelist
 	CmdWhiteList string `ini:"cmd_white_list" env:"RULEGO_CMD_WHITE_LIST"`
-	// LoadLuaLibs 是否加载lua库
+	// LoadLuaLibs Whether to load the lua library
 	LoadLuaLibs string `ini:"load_lua_libs" env:"RULEGO_LOAD_LUA_LIBS"`
-	// Server http服务器地址
+	// Server http server address
 	Server string `ini:"server" env:"RULEGO_SERVER"`
-	// DefaultUsername 你们访问时候，默认用户名
+	// DefaultUsername is the default username when you visit
 	DefaultUsername string `ini:"default_username" env:"RULEGO_DEFAULT_USERNAME"`
-	// 是否把节点调试日志打印到日志文件
+	// Whether node debug logs are printed into log files
 	Debug bool `ini:"debug" env:"RULEGO_DEBUG"`
-	// 最大节点日志大小，默认40
+	// Maximum node log size, default 40
 	MaxNodeLogSize int `ini:"max_node_log_size" env:"RULEGO_MAX_NODE_LOG_SIZE"`
-	// 静态文件路径映射，例如:/ui/*filepath=/home/demo/dist,/images/*filepath=/home/demo/dist/images
+	// Static file path mapping, for example: /ui/*filepath=/home/demo/dist, /images/*filepath=/home/demo/dist/images
 	ResourceMapping string `ini:"resource_mapping" env:"RULEGO_RESOURCE_MAPPING"`
-	// 全局自定义配置，组件可以通过${global.xxx}方式取值
+	// Global custom configuration, components can take values using ${global.xxx}
 	Global types.Properties `ini:"global"`
-	// 节点池文件，规则链json格式
+	// Node pool files, rule chain in JSON format
 	NodePoolFile string `ini:"node_pool_file" env:"RULEGO_NODE_POOL_FILE"`
-	// 是否保存运行日志到文件
+	// Whether to save the runtime log to a file
 	SaveRunLog bool `ini:"save_run_log" env:"RULEGO_SAVE_RUN_LOG"`
-	// ScriptMaxExecutionTime json执行脚本的最大执行时间，单位毫秒
+	// ScriptMaxExecutionTime: The maximum execution time for a script in milliseconds
 	ScriptMaxExecutionTime int `ini:"script_max_execution_time" env:"RULEGO_SCRIPT_MAX_EXECUTION_TIME"`
-	// EndpointEnabled 是否启用endpoint
+	// EndpointEnabled Whether to enable Endpoint
 	EndpointEnabled *bool `ini:"endpoint_enabled" env:"RULEGO_ENDPOINT_ENABLED"`
-	// SecretKey 密钥
+	// SecretKey key
 	SecretKey *string `ini:"secret_key" env:"RULEGO_SECRET_KEY"`
-	// EventBusChainId 核心规则链Id
+	// EventBusChainId Core rule Chain Id
 	EventBusChainId string `ini:"event_bus_chain_id" env:"RULEGO_EVENT_BUS_CHAIN_ID"`
 
-	// RequireAuth api访问是否需要验证，默认不需要
+	// Whether authentication is required for RequireAuth API access, by default it is not required
 	RequireAuth bool `ini:"require_auth" env:"RULEGO_REQUIRE_AUTH"`
-	// JwtSecretKey jwt密钥
+	// JwtSecretKey jwt key
 	JwtSecretKey string `ini:"jwt_secret_key" env:"RULEGO_JWT_SECRET_KEY"`
-	// JwtExpireTime jwt过期时间，单位毫秒
+	// JwtExpireTime, jwt expiration time, in milliseconds
 	JwtExpireTime int `ini:"jwt_expire_time" env:"RULEGO_JWT_EXPIRE_TIME"`
-	// JwtIssuer jwt签发者
+	// JwtIssuer jwt issuer
 	JwtIssuer string `ini:"jwt_issuer" env:"RULEGO_JWT_ISSUER"`
-	// 用户列表
+	// User list
 	Users types.Properties `ini:"users"`
-	// Pprof pprof配置
+	// Pprof pprof configuration
 	Pprof Pprof `ini:"pprof"`
-	// 组件市场根地址
+	// Module market root address
 	MarketplaceBaseUrl string `ini:"marketplace_base_url" env:"RULEGO_MARKETPLACE_BASE_URL"`
-	// 是否默认HTTP服务设置成共享节点
+	// Is the HTTP service set to a shared node by default?
 	ShareHttpServer bool `ini:"share_http_server" env:"RULEGO_SHARE_HTTP_SERVER"`
-	// MCP配置
+	// MCP configuration
 	MCP MCP `ini:"mcp"`
-	// 用户名和密码映射
+	// Username and password mapping
 	UserNamePasswordMap types.Properties `ini:"-"`
-	// API key和用户名映射
+	// API key and username mapping
 	ApiKeyUserNameMap types.Properties `ini:"-"`
 }
 
@@ -87,23 +87,23 @@ type Pprof struct {
 }
 
 type MCP struct {
-	// 是否启用MCP服务，默认为true
+	// Whether to enable MCP service is set to true by default
 	Enable bool `ini:"enable" env:"RULEGO_MCP_ENABLE"`
-	// 是否把组件作为工MCP具，默认为true
+	// Whether to use components as MCP tools defaults to true
 	LoadComponentsAsTool bool `ini:"load_components_as_tool" env:"RULEGO_MCP_LOAD_COMPONENTS_AS_TOOL"`
-	// 是否把规则链作为MCP工具，默认为true
+	// Whether to use the rule chain as an MCP tool, default is true
 	LoadChainsAsTool bool `ini:"load_chains_as_tool" env:"RULEGO_MCP_LOAD_CHAINS_AS_TOOL"`
-	// 是否把API座位MCP工具，默认为true
+	// Whether to set the API seat MCP tool to true by default
 	LoadApisAsTool bool `ini:"load_apis_as_tool" env:"RULEGO_MCP_LOAD_APIS_AS_TOOL"`
-	// 排除的规则链ID，多个用逗号分隔。支持*通配符，例如: *Filter
+	// Rule chain IDs for exclusion, multiple separated by commas. Supports *wildcards, for example: *Filter
 	ExcludeChains string `ini:"exclude_chains" env:"RULEGO_MCP_EXCLUDE_CHAINS"`
-	// 排除的组件，多个用逗号分隔。支持*通配符，例如: *Filter
+	// Excluded components, multiple separated by commas. Supports *wildcards, for example: *Filter
 	ExcludeComponents string `ini:"exclude_components" env:"RULEGO_MCP_EXCLUDE_COMPONENTS"`
 }
 
-// LoadFromEnv 从环境变量加载配置
+// LoadFromEnv loads the configuration from the environment variable
 func (c *Config) LoadFromEnv() {
-	// 基础配置
+	// Basic configuration
 	if value := os.Getenv("RULEGO_DATA_DIR"); value != "" {
 		c.DataDir = value
 	}
@@ -149,24 +149,24 @@ func (c *Config) LoadFromEnv() {
 		}
 	}
 
-	// Endpoint配置
+	// Endpoint configuration
 	if value := os.Getenv("RULEGO_ENDPOINT_ENABLED"); value != "" {
 		if boolValue, err := strconv.ParseBool(value); err == nil {
 			c.EndpointEnabled = &boolValue
 		}
 	}
 
-	// SecretKey配置
+	// SecretKey configuration
 	if value := os.Getenv("RULEGO_SECRET_KEY"); value != "" {
 		c.SecretKey = &value
 	}
 
-	// EventBus配置
+	// EventBus configuration
 	if value := os.Getenv("RULEGO_EVENT_BUS_CHAIN_ID"); value != "" {
 		c.EventBusChainId = value
 	}
 
-	// JWT配置
+	// JWT configuration
 	if value := os.Getenv("RULEGO_REQUIRE_AUTH"); value != "" {
 		if boolValue, err := strconv.ParseBool(value); err == nil {
 			c.RequireAuth = boolValue
@@ -184,7 +184,7 @@ func (c *Config) LoadFromEnv() {
 		c.JwtIssuer = value
 	}
 
-	// 其他配置
+	// Other configurations
 	if value := os.Getenv("RULEGO_MARKETPLACE_BASE_URL"); value != "" {
 		c.MarketplaceBaseUrl = value
 	}
@@ -194,7 +194,7 @@ func (c *Config) LoadFromEnv() {
 		}
 	}
 
-	// Pprof配置
+	// Pprof configuration
 	if value := os.Getenv("RULEGO_PPROF_ENABLE"); value != "" {
 		if boolValue, err := strconv.ParseBool(value); err == nil {
 			c.Pprof.Enable = boolValue
@@ -204,7 +204,7 @@ func (c *Config) LoadFromEnv() {
 		c.Pprof.Addr = value
 	}
 
-	// MCP配置
+	// MCP configuration
 	if value := os.Getenv("RULEGO_MCP_ENABLE"); value != "" {
 		if boolValue, err := strconv.ParseBool(value); err == nil {
 			c.MCP.Enable = boolValue
@@ -249,7 +249,7 @@ func (c *Config) InitUserMap() {
 	}
 }
 
-// CheckPassword 检查密码
+// CheckPassword: Check the password
 func (c *Config) CheckPassword(username, password string) bool {
 	if c.UserNamePasswordMap == nil {
 		return false
@@ -257,7 +257,7 @@ func (c *Config) CheckPassword(username, password string) bool {
 	return c.UserNamePasswordMap[username] == password
 }
 
-// GetUsernameByApiKey 通过ApiKey获取用户名
+// GetUsernameByApiKey Retrieves the username through the ApiKey
 func (c *Config) GetUsernameByApiKey(apikey string) string {
 	if c.ApiKeyUserNameMap == nil {
 		return ""
@@ -265,7 +265,7 @@ func (c *Config) GetUsernameByApiKey(apikey string) string {
 	return c.ApiKeyUserNameMap[apikey]
 }
 
-// GetApiKeyByUsername 通过用户名获取ApiKey
+// GetApiKeyByUsername Retrieves the ApiKey from the username
 func (c *Config) GetApiKeyByUsername(username string) string {
 	if c.UserNamePasswordMap == nil {
 		return ""
@@ -278,7 +278,7 @@ func (c *Config) GetApiKeyByUsername(username string) string {
 	return ""
 }
 
-// DefaultConfig 默认配置
+// DefaultConfig The default configuration
 var DefaultConfig = Config{
 	DataDir: "./data",
 	// LogFile:      "./rulego.log",
@@ -289,7 +289,7 @@ var DefaultConfig = Config{
 	MaxNodeLogSize:     40,
 	ResourceMapping:    "/editor/*filepath=./editor,/images/*filepath=./editor/images",
 	JwtSecretKey:       "r6G7qZ8xk9P0y1Q2w3E4r5T6y7U8i9O0pL7z8x9CvBnM3k2l1",
-	JwtExpireTime:      43200000, // 12小时
+	JwtExpireTime:      43200000, // 12 hours
 	JwtIssuer:          "rulego.cc",
 	MarketplaceBaseUrl: "http://8.134.32.225:9090/api/v1",
 	ShareHttpServer:    true,

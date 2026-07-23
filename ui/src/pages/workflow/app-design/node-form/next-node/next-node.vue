@@ -55,9 +55,9 @@ useResizeObserver(nodeListRef, (entries) => {
 <template>
   <div v-if="props.nextData.length">
     <div class="border-t-[0.5px] border-border p-4">
-      <div class="mb-1 flex items-center font-semibold">下一步</div>
+      <div class="mb-1 flex items-center font-semibold">Next</div>
       <div class="mb-2 text-sm text-slate-400">
-        添加此工作流程中的下一个节点
+        Add the next node in this workflow
       </div>
       <div class="flex py-1">
         <div
@@ -66,7 +66,7 @@ useResizeObserver(nodeListRef, (entries) => {
           <div
             class="shadow-xs flex h-5 w-5 items-center justify-center rounded-md border-[0.5px] border-border bg-blue-500 text-white"
           >
-            <!-- 图标占位 -->
+            <!-- Icon occupying a place -->
           </div>
         </div>
         <svg class="w-6 shrink-0" :style="`height: ${svgHeight}px`">
